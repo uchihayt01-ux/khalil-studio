@@ -1,0 +1,5 @@
+.claude
+.git
+_frames
+node_modules
+*.log

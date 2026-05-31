@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Khalil M'hamdi — Creative studio for Web Development & UI/UX Design. View the portfolio and place an order online." />
+  <title>Khalil M'hamdi — Web Development & UI/UX Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- EmailJS SDK (optional — see CONFIG in script.js). Falls back to mailto if not configured. -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+  <!-- ===== Interactive animated background ===== -->
+  <canvas id="bg-canvas"></canvas>     <!-- WebGL liquid-silk (shown when supported) -->
+  <div class="bg" aria-hidden="true">  <!-- CSS fallback when WebGL is unavailable -->
+    <div class="bg-grid"></div>
+    <div class="bg-orbs">
+      <span class="orb orb-1"></span>
+      <span class="orb orb-2"></span>
+      <span class="orb orb-3"></span>
+    </div>
+    <div class="pointer-glow"></div>   <!-- violet spotlight following the cursor -->
+  </div>
+
+  <!-- ===== Navigation ===== -->
+  <header class="nav" id="nav">
+    <a href="#hero" class="nav__logo"><span class="nav__mark"></span>Khalil<small>studio</small></a>
+
+    <nav class="nav__center" id="nav-links">
+      <a href="#portfolio">Portfolio</a>
+      <a href="#services">Services</a>
+      <a href="#about">About</a>
+      <a href="#hero" class="nav__only-mobile" data-open-order>Order Now</a>
+      <a href="#hero" class="nav__only-mobile" data-open-account>My Account</a>
+    </nav>
+
+    <div class="nav__right">
+      <button class="nav__order" data-open-order>Order Now</button>
+      <button class="nav__account" data-open-account aria-label="My Account">
+        <span class="nav__avatar" id="nav-avatar">KM</span>
+      </button>
+    </div>
+
+    <button class="nav__toggle" id="nav-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <main>
+    <!-- ===== Hero ===== -->
+    <section class="hero" id="hero">
+      <div class="hero__inner">
+        <p class="hero__eyebrow hero__anim">DESIGN &amp; BUILD YOUR NEXT PRODUCT</p>
+        <h1 class="hero__title hero__anim">
+          A new way to think and create<br /><span class="grad">with design &amp; code</span>
+        </h1>
+        <p class="hero__lead hero__anim">
+          Front-End Development &amp; UI/UX Design studio by <strong>Khalil M'hamdi</strong>.
+          Browse the work, or start an order in under two minutes.
+        </p>
+        <div class="hero__actions hero__anim">
+          <button class="btn btn--pill" data-open-order>Get early access</button>
+          <a href="#portfolio" class="btn btn--text">View Portfolio</a>
+        </div>
+        <div class="hero__stats hero__anim">
+          <div><span>5+</span>Years experience</div>
+          <div><span>20+</span>Projects shipped</div>
+          <div><span>4.9</span>Avg. rating</div>
+        </div>
+      </div>
+      <a href="#portfolio" class="hero__scroll" aria-label="Scroll down"><span class="hero__mouse"></span></a>
+    </section>
+
+    <!-- ===== Services ===== -->
+    <section class="section" id="services">
+      <div class="section__head reveal">
+        <span class="section__num">01</span>
+        <h2 class="section__title">What I do</h2>
+      </div>
+      <div class="services">
+        <article class="svc reveal">
+          <div class="svc__icon">✦</div>
+          <h3>UI/UX Design</h3>
+          <p>Research, wireframes, design systems and pixel-perfect high-fidelity interfaces for web &amp; mobile.</p>
+          <button class="svc__cta" data-open-order data-preset="design">Order design →</button>
+        </article>
+        <article class="svc reveal svc--featured">
+          <div class="svc__icon">◆</div>
+          <h3>Web Development</h3>
+          <p>Fast, responsive, accessible front-ends built from scratch with modern JavaScript &amp; frameworks.</p>
+          <button class="svc__cta" data-open-order data-preset="dev">Order build →</button>
+        </article>
+        <article class="svc reveal">
+          <div class="svc__icon">✺</div>
+          <h3>Full Package</h3>
+          <p>End-to-end: strategy, design and development — one team, one timeline, one polished result.</p>
+          <button class="svc__cta" data-open-order data-preset="full">Order package →</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== Portfolio ===== -->
+    <section class="section" id="portfolio">
+      <div class="section__head reveal">
+        <span class="section__num">02</span>
+        <h2 class="section__title">Selected work</h2>
+      </div>
+
+      <div class="filters reveal" id="filters">
+        <button class="filter is-active" data-filter="all">All</button>
+        <button class="filter" data-filter="dev">Web Dev</button>
+        <button class="filter" data-filter="design">UI/UX Design</button>
+      </div>
+
+      <div class="projects" id="projects">
+        <article class="card reveal" data-cat="design">
+          <div class="card__art">
+            <img src="assets/img/portfolio-01.jpg" alt="Carigo car-rental app UI" loading="lazy" />
+            <span class="card__cat">UI/UX</span>
+          </div>
+          <div class="card__body">
+            <h3>Carigo App</h3>
+            <p>Mobile UI/UX for a premium car-rental service — flows, components and a polished visual system.</p>
+            <div class="card__tags"><span>Figma</span><span>Mobile</span><span>UX</span></div>
+          </div>
+        </article>
+        <article class="card reveal" data-cat="dev">
+          <div class="card__art">
+            <img src="assets/img/portfolio-03.jpg" alt="Movie streaming app screens" loading="lazy" />
+            <span class="card__cat">Web Dev</span>
+          </div>
+          <div class="card__body">
+            <h3>Movis — Streaming App</h3>
+            <p>Movie streaming experience with rich browsing, watchlists and a cinematic dark interface.</p>
+            <div class="card__tags"><span>JavaScript</span><span>UI</span><span>App</span></div>
+          </div>
+        </article>
+        <article class="card reveal" data-cat="dev">
+          <div class="card__art">
+            <img src="assets/img/portfolio-04.png" alt="SmartScan medical imaging web portal" loading="lazy" />
+            <span class="card__cat">Web Dev</span>
+          </div>
+          <div class="card__body">
+            <h3>SmartScan Portal</h3>
+            <p>Web portal design and front-end build for a medical document scanning product.</p>
+            <div class="card__tags"><span>Front-End</span><span>SCSS</span><span>Portal</span></div>
+          </div>
+        </article>
+        <article class="card reveal" data-cat="design">
+          <div class="card__art">
+            <img src="assets/img/project-2.jpg" alt="Nutrition tracking mobile app" loading="lazy" />
+            <span class="card__cat">UI/UX</span>
+          </div>
+          <div class="card__body">
+            <h3>Nutrion Art</h3>
+            <p>Clean, friendly mobile app design for meal tracking and personalized nutrition plans.</p>
+            <div class="card__tags"><span>Figma</span><span>Mobile</span><span>Design</span></div>
+          </div>
+        </article>
+        <article class="card reveal" data-cat="dev">
+          <div class="card__art">
+            <img src="assets/img/portfolio-02.png" alt="Personal portfolio dashboard UI" loading="lazy" />
+            <span class="card__cat">Web Dev</span>
+          </div>
+          <div class="card__body">
+            <h3>Portfolio Website</h3>
+            <p>Animated, responsive personal portfolio built from scratch to showcase creative work.</p>
+            <div class="card__tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
+          </div>
+        </article>
+        <article class="card reveal" data-cat="design">
+          <div class="card__art">
+            <img src="assets/img/portfolio-05.jpg" alt="DSG brand identity and business cards" loading="lazy" />
+            <span class="card__cat">UI/UX</span>
+          </div>
+          <div class="card__body">
+            <h3>DSG — Brand Identity</h3>
+            <p>Logo and brand-identity system for Deaf Smart Glasses — cards, marks and guidelines.</p>
+            <div class="card__tags"><span>Illustrator</span><span>Branding</span><span>Logo</span></div>
+          </div>
+        </article>
+        <article class="card reveal" data-cat="design">
+          <div class="card__art">
+            <img src="assets/img/portfolio-06.jpg" alt="Collection of logo designs" loading="lazy" />
+            <span class="card__cat">UI/UX</span>
+          </div>
+          <div class="card__body">
+            <h3>Logo Collection</h3>
+            <p>A collection of logo and brand-mark work across illustration and visual design.</p>
+            <div class="card__tags"><span>Illustrator</span><span>Logos</span><span>Design</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== About ===== -->
+    <section class="section" id="about">
+      <div class="section__head reveal">
+        <span class="section__num">03</span>
+        <h2 class="section__title">About the studio</h2>
+      </div>
+      <div class="about">
+        <div class="about__text reveal">
+          <p>
+            I'm a multidisciplinary creator working at the intersection of <strong>design</strong> and
+            <strong>code</strong>. Over the last five years I've designed and shipped websites, web apps
+            and mobile interfaces — from the first sketch to production.
+          </p>
+          <p>
+            I pair a designer's eye for detail with a developer's discipline, turning complex problems
+            into clean, intuitive interfaces. Based in Oran, Algeria, working with clients worldwide.
+          </p>
+          <div class="chips">
+            <span>JavaScript</span><span>Next.js</span><span>Vue</span><span>Angular</span>
+            <span>Laravel</span><span>SCSS</span><span>Figma</span><span>Photoshop</span><span>Illustrator</span>
+          </div>
+        </div>
+        <div class="about__card reveal">
+          <div class="about__avatar">KM</div>
+          <h3>Khalil M'hamdi</h3>
+          <p class="about__role">Front-End Developer · UI/UX Designer</p>
+          <ul class="about__meta">
+            <li><strong>Based in</strong> Oran, Algeria</li>
+            <li><strong>Focus</strong> Web &amp; Product Design</li>
+            <li><strong>Availability</strong> Open to work</li>
+          </ul>
+          <button class="btn btn--primary btn--block" data-open-order>Start a project</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="footer__brand">
+      <a href="#hero" class="nav__logo">KM<span>.</span><small>studio</small></a>
+      <p>Design &amp; development studio — Oran, Algeria.</p>
+    </div>
+    <div class="footer__col">
+      <h4>Navigate</h4>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#services">Services</a>
+      <button class="linkish" data-open-order>Order Now</button>
+      <button class="linkish" data-open-account>My Account</button>
+    </div>
+    <div class="footer__col">
+      <h4>Connect</h4>
+      <a href="https://www.linkedin.com/in/mhamdi-khalil-828352297" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.instagram.com/khalil.ux31" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/khalil.mhamdi.562114" target="_blank" rel="noopener">Facebook</a>
+      <a href="mailto:khalilmhamdi4work@gmail.com">khalilmhamdi4work@gmail.com</a>
+    </div>
+    <p class="footer__copy">© <span id="year"></span> Khalil M'hamdi. All rights reserved.</p>
+  </footer>
+
+  <!-- ===== Order Wizard Modal ===== -->
+  <div class="modal" id="order-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="order-title">
+    <div class="modal__backdrop" data-close-order></div>
+    <div class="modal__panel">
+      <button class="modal__close" data-close-order aria-label="Close">✕</button>
+
+      <div class="wizard">
+        <header class="wizard__head">
+          <div class="wizard__titlerow">
+            <div>
+              <span class="wizard__eyebrow">New project</span>
+              <h2 id="order-title">Place an order</h2>
+            </div>
+            <span class="wizard__count" id="wiz-count">Step 1 of 3</span>
+          </div>
+          <ol class="steps" id="steps">
+            <li class="step is-active" data-step="1"><span>1</span>Service</li>
+            <li class="step" data-step="2"><span>2</span>Details</li>
+            <li class="step" data-step="3"><span>3</span>Confirm</li>
+          </ol>
+        </header>
+
+        <form id="order-form" novalidate>
+          <!-- Step 1: Service -->
+          <section class="wstep is-active" data-pane="1">
+            <p class="wstep__hint">Choose what you need. You can fine-tune the brief next.</p>
+            <div class="svc-picker" id="svc-picker">
+              <label class="svc-opt">
+                <input type="radio" name="service" value="UI/UX Design" required />
+                <div class="svc-opt__card">
+                  <span class="svc-opt__icon">✦</span>
+                  <h4>UI/UX Design</h4>
+                  <p>Wireframes, design systems &amp; high-fidelity UI.</p>
+                  <span class="svc-opt__check">✓</span>
+                </div>
+              </label>
+              <label class="svc-opt">
+                <input type="radio" name="service" value="Web Development" />
+                <div class="svc-opt__card">
+                  <span class="svc-opt__icon">◆</span>
+                  <h4>Web Development</h4>
+                  <p>Responsive, fast, accessible front-end builds.</p>
+                  <span class="svc-opt__check">✓</span>
+                </div>
+              </label>
+              <label class="svc-opt">
+                <input type="radio" name="service" value="Full Package" />
+                <div class="svc-opt__card">
+                  <span class="svc-opt__icon">✺</span>
+                  <h4>Full Package</h4>
+                  <p>Design + development, end to end.</p>
+                  <span class="svc-opt__check">✓</span>
+                </div>
+              </label>
+            </div>
+            <p class="field-error" data-error="service"></p>
+          </section>
+
+          <!-- Step 2: Details -->
+          <section class="wstep" data-pane="2">
+            <div class="order-as" id="order-as">
+              <span class="order-as__avatar" id="order-as-avatar">JD</span>
+              <div>
+                <strong id="order-as-name">Jane Doe</strong>
+                <span id="order-as-email">jane@email.com</span>
+              </div>
+              <em>Ordering as</em>
+            </div>
+            <div class="field">
+              <label for="o-brief">Project brief</label>
+              <textarea id="o-brief" name="brief" rows="4" placeholder="Tell me about your project, goals and any links…" required></textarea>
+              <p class="field-error" data-error="brief"></p>
+            </div>
+            <div class="field">
+              <label for="o-timeline">Desired timeline</label>
+              <select id="o-timeline" name="timeline">
+                <option value="As soon as possible">As soon as possible</option>
+                <option value="1–2 weeks">1–2 weeks</option>
+                <option value="2–4 weeks" selected>2–4 weeks</option>
+                <option value="1–2 months">1–2 months</option>
+                <option value="Flexible / not sure">Flexible / not sure</option>
+              </select>
+            </div>
+          </section>
+
+          <!-- Step 3: Confirm -->
+          <section class="wstep" data-pane="3">
+            <p class="wstep__hint">Review your order before sending.</p>
+            <dl class="summary" id="summary"></dl>
+            <label class="consent">
+              <input type="checkbox" id="o-consent" name="consent" required />
+              <span>I agree to be contacted about this project at my account email.</span>
+            </label>
+            <p class="field-error" data-error="consent"></p>
+          </section>
+
+          <footer class="wizard__foot">
+            <button type="button" class="btn btn--ghost" id="wiz-back" hidden>← Back</button>
+            <button type="button" class="btn btn--primary" id="wiz-next">Continue →</button>
+            <button type="submit" class="btn btn--primary" id="wiz-submit" hidden>
+              <span class="btn__label">Submit order</span>
+              <span class="btn__spinner" hidden></span>
+            </button>
+          </footer>
+        </form>
+      </div>
+
+      <!-- Success overlay -->
+      <div class="success" id="success" hidden>
+        <canvas id="confetti"></canvas>
+        <div class="success__check">✓</div>
+        <h2>Order received!</h2>
+        <p>Thanks <span id="success-name">there</span> — your brief is on its way.
+           I'll reply within 24 hours. Track its status anytime in <button class="linkish" data-open-account data-close-order>your account</button>.</p>
+        <button class="btn btn--primary" data-close-order>Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Account Modal (auth + personal dashboard) ===== -->
+  <div class="modal" id="account-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-title">
+    <div class="modal__backdrop" data-close-account></div>
+    <div class="modal__panel modal__panel--wide">
+      <button class="modal__close" data-close-account aria-label="Close">✕</button>
+
+      <!-- ---- AUTH VIEW (logged out) ---- -->
+      <div class="auth" id="auth-view">
+        <div class="auth__intro">
+          <span class="auth__mark"></span>
+          <h2 id="account-title">Client area</h2>
+          <p>Create an account to place an order and track its status anytime.</p>
+        </div>
+        <div class="auth__tabs">
+          <button type="button" class="auth__tab is-active" data-auth-tab="login">Log in</button>
+          <button type="button" class="auth__tab" data-auth-tab="signup">Create account</button>
+        </div>
+
+        <!-- Log in -->
+        <form id="login-form" class="auth__form" novalidate>
+          <div class="field">
+            <label for="li-email">Email</label>
+            <input type="email" id="li-email" name="email" placeholder="you@email.com" required />
+            <p class="field-error" data-error="li-email"></p>
+          </div>
+          <div class="field field--pass">
+            <label for="li-pass">Password</label>
+            <input type="password" id="li-pass" name="password" placeholder="Your password" required />
+            <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
+            <p class="field-error" data-error="li-pass"></p>
+          </div>
+          <button type="submit" class="btn btn--primary btn--block">Log in</button>
+          <p class="auth__switch">New here? <button type="button" class="linkish" data-auth-tab="signup">Create an account</button></p>
+        </form>
+
+        <!-- Sign up -->
+        <form id="signup-form" class="auth__form" novalidate hidden>
+          <div class="field">
+            <label for="su-name">Full name</label>
+            <input type="text" id="su-name" name="name" placeholder="Jane Doe" required />
+            <p class="field-error" data-error="su-name"></p>
+          </div>
+          <div class="field">
+            <label for="su-email">Email</label>
+            <input type="email" id="su-email" name="email" placeholder="you@email.com" required />
+            <p class="field-error" data-error="su-email"></p>
+          </div>
+          <div class="grid2">
+            <div class="field field--pass">
+              <label for="su-pass">Password</label>
+              <input type="password" id="su-pass" name="password" placeholder="Min. 6 characters" required />
+              <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
+              <p class="field-error" data-error="su-pass"></p>
+            </div>
+            <div class="field field--pass">
+              <label for="su-pass2">Confirm password</label>
+              <input type="password" id="su-pass2" name="password2" placeholder="Repeat password" required />
+              <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
+              <p class="field-error" data-error="su-pass2"></p>
+            </div>
+          </div>
+          <button type="submit" class="btn btn--primary btn--block">Create account</button>
+          <p class="auth__switch">Already have an account? <button type="button" class="linkish" data-auth-tab="login">Log in</button></p>
+        </form>
+      </div>
+
+      <!-- ---- DASHBOARD VIEW (logged in) ---- -->
+      <div class="dash" id="dash-view" hidden>
+        <header class="dash__head">
+          <div class="dash__avatar" id="dash-avatar">KM</div>
+          <div>
+            <h2 id="dash-name">My orders</h2>
+            <p class="dash__sub" id="dash-sub">Your orders &amp; project status</p>
+          </div>
+          <div class="dash__actions">
+            <button class="btn btn--primary dash__new" data-open-order data-close-account>+ New order</button>
+            <button class="btn btn--ghost" id="logout-btn">Log out</button>
+          </div>
+        </header>
+
+        <div class="dash__stats" id="dash-stats"></div>
+
+        <div class="dash__tablewrap">
+          <table class="orders" id="orders-table">
+            <thead>
+              <tr><th>Order</th><th>Service</th><th>Timeline</th><th>Date</th><th>Status</th></tr>
+            </thead>
+            <tbody id="orders-body"></tbody>
+          </table>
+          <div class="dash__empty" id="dash-empty" hidden>
+            <p>No orders yet.</p>
+            <button class="btn btn--primary" data-open-order data-close-account>Place your first order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Local tooling / editor
+.claude/
+.vercel/
+node_modules/
+.DS_Store
+Thumbs.db
+
+# Temporary / scratch
+_frames/
+*.log
