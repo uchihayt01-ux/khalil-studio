@@ -614,12 +614,18 @@ $('#admin-refresh').addEventListener('click', () => renderAdmin());
 /* --- initialise the session on page load --- */
 (async function initAuth() {
   if (!sb) { updateAvatar(); console.warn('Supabase not loaded.'); return; }
+  // True when the user has just arrived via the email-confirmation link.
+  const justConfirmed = /access_token|type=signup/.test(location.hash);
   try {
     const { data } = await sb.auth.getSession();
     state.user = sessionToUser(data.session);
     if (state.user) { const l = await fetchOrders(); state.myCount = l.length; }
   } catch (e) { console.warn(e); }
   updateAvatar();
+  if (justConfirmed && state.user) {
+    toast('Email confirmed ✓ You are now signed in.');
+    history.replaceState(null, '', location.pathname + location.search); // clean the URL
+  }
   sb.auth.onAuthStateChange((_evt, session) => {
     state.user = sessionToUser(session);
     updateAvatar();
