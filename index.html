@@ -470,12 +470,52 @@
           </div>
         </div>
       </div>
+
+      <!-- ---- ADMIN VIEW (owner only) ---- -->
+      <div class="dash" id="admin-view" hidden>
+        <header class="dash__head">
+          <div class="dash__avatar dash__avatar--admin">★</div>
+          <div>
+            <h2>Admin dashboard</h2>
+            <p class="dash__sub" id="admin-sub">All clients &amp; orders</p>
+          </div>
+          <div class="dash__actions">
+            <button class="btn btn--ghost" id="admin-refresh">↻ Refresh</button>
+            <button class="btn btn--ghost" id="admin-logout">Log out</button>
+          </div>
+        </header>
+
+        <div class="dash__stats" id="admin-stats"></div>
+
+        <h3 class="admin__h">All orders</h3>
+        <div class="dash__tablewrap">
+          <table class="orders" id="admin-orders-table">
+            <thead>
+              <tr><th>Client</th><th>Service</th><th>Timeline</th><th>Date</th><th>Status</th></tr>
+            </thead>
+            <tbody id="admin-orders-body"></tbody>
+          </table>
+          <div class="dash__empty" id="admin-orders-empty" hidden><p>No orders yet.</p></div>
+        </div>
+
+        <h3 class="admin__h">All accounts</h3>
+        <div class="dash__tablewrap">
+          <table class="orders" id="admin-users-table">
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Joined</th></tr>
+            </thead>
+            <tbody id="admin-users-body"></tbody>
+          </table>
+          <div class="dash__empty" id="admin-users-empty" hidden><p>No accounts yet.</p></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ===== Toast ===== -->
   <div class="toast" id="toast" hidden></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </body>
 </html>

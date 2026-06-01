@@ -18,6 +18,14 @@ const CONFIG = {
   },
 };
 
+/* ---------- 1b) SUPABASE (real accounts + orders) ----------------------- */
+const SUPABASE_URL = 'https://qzfgpxzsvwpasqsyrzwj.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_OvY3D2mqubkPE_uF_c_2XQ_R2fyHA8n';
+const ADMIN_EMAIL = CONFIG.adminEmail; // this email sees the admin dashboard
+const sb = (window.supabase && SUPABASE_URL.startsWith('http'))
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
+
 /* ---------- 2) HELPERS --------------------------------------------------- */
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -37,57 +45,40 @@ function toast(msg, variant = '') {
 
 $('#year').textContent = new Date().getFullYear();
 
-/* ---------- 2b) AUTH (client accounts) ----------------------------------
-   NOTE: This is a front-end-only demo store (localStorage). Passwords are
-   SHA-256 hashed so they aren't kept in plain text, but real authentication
-   needs a server. Don't treat this as production-secure.
-   ----------------------------------------------------------------------- */
-const USERS_KEY = 'km_users';
-const SESSION_KEY = 'km_session';
+/* ---------- 2b) AUTH via Supabase (real accounts) ----------------------- */
+const state = { user: null, myCount: 0 }; // user = { id, name, email }
 
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem(USERS_KEY)) || []; } catch { return []; }
-}
-function saveUsers(list) { localStorage.setItem(USERS_KEY, JSON.stringify(list)); }
-
-async function hashPassword(pw) {
-  try {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
-    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
-  } catch {
-    // Fallback hash if SubtleCrypto is unavailable (e.g. non-secure context).
-    let h = 0; for (let i = 0; i < pw.length; i++) { h = (h << 5) - h + pw.charCodeAt(i); h |= 0; }
-    return 'fb' + (h >>> 0).toString(16);
-  }
-}
-
-function currentUser() {
-  const email = localStorage.getItem(SESSION_KEY);
-  if (!email) return null;
-  return getUsers().find((u) => u.email === email) || null;
-}
+function currentUser() { return state.user; }
+function isAdmin() { return !!state.user && state.user.email === ADMIN_EMAIL; }
 function initials(name) {
   return (name || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 }
+function sessionToUser(session) {
+  if (!session || !session.user) return null;
+  const u = session.user;
+  const name = (u.user_metadata && u.user_metadata.name) || (u.email || '').split('@')[0];
+  return { id: u.id, email: u.email, name };
+}
 
 async function signup({ name, email, password }) {
-  email = email.toLowerCase();
-  const users = getUsers();
-  if (users.some((u) => u.email === email)) throw new Error('An account with this email already exists.');
-  const user = { name: name.trim(), email, pass: await hashPassword(password), createdAt: Date.now() };
-  users.push(user);
-  saveUsers(users);
-  localStorage.setItem(SESSION_KEY, email);
-  return user;
+  if (!sb) throw new Error('Service unavailable. Please try again later.');
+  const { data, error } = await sb.auth.signUp({ email, password, options: { data: { name } } });
+  if (error) throw new Error(error.message);
+  if (!data.session) {
+    // Email-confirmation is enabled on the project.
+    throw new Error('confirm');
+  }
+  state.user = sessionToUser(data.session);
+  return state.user;
 }
 async function login({ email, password }) {
-  email = email.toLowerCase();
-  const user = getUsers().find((u) => u.email === email);
-  if (!user || user.pass !== (await hashPassword(password))) throw new Error('Wrong email or password.');
-  localStorage.setItem(SESSION_KEY, email);
-  return user;
+  if (!sb) throw new Error('Service unavailable. Please try again later.');
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) throw new Error('Wrong email or password.');
+  state.user = sessionToUser(data.session);
+  return state.user;
 }
-function logout() { localStorage.removeItem(SESSION_KEY); }
+async function logout() { if (sb) await sb.auth.signOut(); state.user = null; }
 
 /* ---------- 3) NAV ------------------------------------------------------- */
 const nav = $('#nav');
@@ -422,56 +413,53 @@ function escapeHtml(s) {
   );
 }
 
-/* ---------- 8) ORDERS, ACCOUNT VIEW & DASHBOARD ------------------------- */
-const STORE_KEY = 'km_orders';
+/* ---------- 8) ORDERS, ACCOUNT VIEW, DASHBOARD & ADMIN ------------------ */
 const STATUSES = [
   { key: 'new', label: 'Reviewing Brief', cls: 'badge--review' },
   { key: 'progress', label: 'In Progress', cls: 'badge--progress' },
   { key: 'done', label: 'Completed', cls: 'badge--done' },
 ];
+function statusBadge(key) {
+  const s = STATUSES.find((x) => x.key === key) || STATUSES[0];
+  return `<span class="badge ${s.cls}">${s.label}</span>`;
+}
+function shortId(id) { return (id || '').replace(/-/g, '').slice(0, 6).toUpperCase(); }
 
-function loadOrders() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
-  catch { return []; }
+/* --- Supabase data helpers --- */
+async function addOrderDB(order) {
+  const { error } = await sb.from('orders').insert(order);
+  if (error) throw new Error(error.message);
 }
-function saveOrders(list) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(list));
-  updateAvatar();
+async function fetchOrders() {            // RLS returns own orders for clients, all for admin
+  const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending: false });
+  if (error) { console.warn(error); return []; }
+  return data || [];
 }
-function addOrder(order) {
-  const list = loadOrders();
-  list.unshift(order);
-  saveOrders(list);
-}
-// Only the signed-in client's own orders.
-function myOrders() {
-  const user = currentUser();
-  if (!user) return [];
-  return loadOrders().filter((o) => o.userEmail === user.email);
+async function fetchProfiles() {          // RLS allows the admin only
+  const { data, error } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+  if (error) { console.warn(error); return []; }
+  return data || [];
 }
 
 // Nav avatar reflects login state: initials + personal order count.
 function updateAvatar() {
   const avatar = $('#nav-avatar');
-  const user = currentUser();
-  avatar.textContent = user ? initials(user.name) : '👤';
-  avatar.classList.toggle('is-guest', !user);
-  const count = user ? myOrders().length : 0;
-  if (count > 0) avatar.setAttribute('data-count', count);
+  const u = state.user;
+  avatar.textContent = u ? (isAdmin() ? '★' : initials(u.name)) : '👤';
+  avatar.classList.toggle('is-guest', !u);
+  if (u && state.myCount > 0) avatar.setAttribute('data-count', state.myCount);
   else avatar.removeAttribute('data-count');
 }
 
-function statusBadge(key) {
-  const s = STATUSES.find((x) => x.key === key) || STATUSES[0];
-  return `<span class="badge ${s.cls}">${s.label}</span>`;
-}
-
-// Switch the account modal between auth (logged out) and dashboard (logged in).
-function renderAccount() {
-  const user = currentUser();
-  $('#auth-view').hidden = !!user;
-  $('#dash-view').hidden = !user;
-  if (user) renderDashboard();
+// Route the account modal: auth (logged out) / dashboard (client) / admin (owner).
+async function renderAccount() {
+  const u = state.user;
+  const admin = isAdmin();
+  $('#auth-view').hidden = !!u;
+  $('#dash-view').hidden = !u || admin;
+  $('#admin-view').hidden = !admin;
+  if (admin) await renderAdmin();
+  else if (u) await renderDashboard();
   else setAuthTab('login');
 }
 
@@ -481,16 +469,14 @@ function setAuthTab(tab) {
   $('#signup-form').hidden = tab !== 'signup';
 }
 
-function renderDashboard() {
-  const user = currentUser();
-  if (!user) return;
-  const list = myOrders();
-  const body = $('#orders-body');
-  const empty = $('#dash-empty');
-  const table = $('#orders-table');
+async function renderDashboard() {
+  const u = state.user; if (!u) return;
+  const list = await fetchOrders();
+  state.myCount = list.length; updateAvatar();
+  const body = $('#orders-body'), empty = $('#dash-empty'), table = $('#orders-table');
 
-  $('#dash-avatar').textContent = initials(user.name);
-  $('#dash-name').textContent = `Hi, ${user.name.split(' ')[0]}`;
+  $('#dash-avatar').textContent = initials(u.name);
+  $('#dash-name').textContent = `Hi, ${u.name.split(' ')[0]}`;
 
   const active = list.filter((o) => o.status !== 'done').length;
   const done = list.filter((o) => o.status === 'done').length;
@@ -498,32 +484,66 @@ function renderDashboard() {
     <div class="dash__stat"><b>${list.length}</b><span>Total orders</span></div>
     <div class="dash__stat"><b>${active}</b><span>Active</span></div>
     <div class="dash__stat"><b>${done}</b><span>Completed</span></div>`;
-
   $('#dash-sub').textContent = list.length
-    ? `${user.email} · ${active} active · ${done} completed`
-    : `${user.email} · no orders yet`;
+    ? `${u.email} · ${active} active · ${done} completed`
+    : `${u.email} · no orders yet`;
 
-  if (!list.length) {
-    table.hidden = true;
-    empty.hidden = false;
-    body.innerHTML = '';
-    return;
-  }
-  table.hidden = false;
-  empty.hidden = true;
-  body.innerHTML = list
-    .map(
-      (o) => `
+  if (!list.length) { table.hidden = true; empty.hidden = false; body.innerHTML = ''; return; }
+  table.hidden = false; empty.hidden = true;
+  body.innerHTML = list.map((o) => `
       <tr>
-        <td><span class="o-id">${o.id}</span><span class="o-brief">${escapeHtml(o.brief)}</span></td>
-        <td>${escapeHtml(o.service)}</td>
+        <td><span class="o-id">#${shortId(o.id)}</span><span class="o-brief">${escapeHtml(o.brief || '')}</span></td>
+        <td>${escapeHtml(o.service || '')}</td>
         <td>${escapeHtml(o.timeline || '—')}</td>
-        <td>${fmtDate(o.date)}</td>
+        <td>${fmtDate(o.created_at)}</td>
         <td>${statusBadge(o.status)}</td>
-      </tr>`
-    )
-    .join('');
+      </tr>`).join('');
 }
+
+// Owner-only dashboard: every account + every order, with editable status.
+async function renderAdmin() {
+  const [orders, profiles] = await Promise.all([fetchOrders(), fetchProfiles()]);
+  const active = orders.filter((o) => o.status !== 'done').length;
+  const done = orders.filter((o) => o.status === 'done').length;
+  $('#admin-stats').innerHTML = `
+    <div class="dash__stat"><b>${profiles.length}</b><span>Accounts</span></div>
+    <div class="dash__stat"><b>${orders.length}</b><span>Orders</span></div>
+    <div class="dash__stat"><b>${active}</b><span>Active</span></div>
+    <div class="dash__stat"><b>${done}</b><span>Completed</span></div>`;
+  $('#admin-sub').textContent = `${profiles.length} accounts · ${orders.length} orders`;
+
+  const oBody = $('#admin-orders-body');
+  $('#admin-orders-empty').hidden = orders.length > 0;
+  oBody.innerHTML = orders.map((o) => `
+      <tr>
+        <td><span class="o-id">${escapeHtml(o.name || '—')}</span><span class="o-brief">${escapeHtml(o.email || '')}</span></td>
+        <td>${escapeHtml(o.service || '')}<span class="o-brief">${escapeHtml(o.brief || '')}</span></td>
+        <td>${escapeHtml(o.timeline || '—')}</td>
+        <td>${fmtDate(o.created_at)}</td>
+        <td>
+          <select class="status-select" data-id="${o.id}">
+            ${STATUSES.map((s) => `<option value="${s.key}"${s.key === o.status ? ' selected' : ''}>${s.label}</option>`).join('')}
+          </select>
+        </td>
+      </tr>`).join('');
+
+  const uBody = $('#admin-users-body');
+  $('#admin-users-empty').hidden = profiles.length > 0;
+  uBody.innerHTML = profiles.map((p) => `
+      <tr>
+        <td><span class="o-id">${escapeHtml(p.name || '—')}</span></td>
+        <td>${escapeHtml(p.email || '')}</td>
+        <td>${fmtDate(p.created_at)}</td>
+      </tr>`).join('');
+}
+
+// Admin changes an order's status → save to Supabase.
+document.addEventListener('change', async (e) => {
+  const sel = e.target.closest('.status-select');
+  if (!sel || !sb) return;
+  const { error } = await sb.from('orders').update({ status: sel.value }).eq('id', sel.dataset.id);
+  toast(error ? 'Could not update status.' : 'Status updated ✓', error ? 'warn' : '');
+});
 
 /* --- auth UI wiring --- */
 $$('[data-auth-tab]').forEach((b) => b.addEventListener('click', () => setAuthTab(b.dataset.authTab)));
@@ -548,9 +568,9 @@ $('#login-form').addEventListener('submit', async (e) => {
   try {
     await login({ email: f.email.value.trim(), password: f.password.value });
     f.reset();
-    renderAccount();
+    await renderAccount();
     updateAvatar();
-    toast('Welcome back ✓');
+    toast(isAdmin() ? 'Welcome, admin ★' : 'Welcome back ✓');
   } catch (err) {
     authError('li-pass', err.message);
   }
@@ -571,22 +591,40 @@ $('#signup-form').addEventListener('submit', async (e) => {
   try {
     await signup({ name, email, password: pass });
     f.reset();
-    renderAccount();
+    await renderAccount();
     updateAvatar();
     toast('Account created ✓ You can place an order now.');
   } catch (err) {
-    authError('su-email', err.message);
+    if (err.message === 'confirm') {
+      setAuthTab('login');
+      toast('Account created — check your email to confirm, then log in.', 'warn');
+    } else {
+      authError('su-email', err.message);
+    }
   }
 });
 
-$('#logout-btn').addEventListener('click', () => {
-  logout();
-  updateAvatar();
-  renderAccount();
-  toast('Logged out.');
-});
+function doLogout() {
+  logout().then(() => { updateAvatar(); renderAccount(); toast('Logged out.'); });
+}
+$('#logout-btn').addEventListener('click', doLogout);
+$('#admin-logout').addEventListener('click', doLogout);
+$('#admin-refresh').addEventListener('click', () => renderAdmin());
 
-updateAvatar();
+/* --- initialise the session on page load --- */
+(async function initAuth() {
+  if (!sb) { updateAvatar(); console.warn('Supabase not loaded.'); return; }
+  try {
+    const { data } = await sb.auth.getSession();
+    state.user = sessionToUser(data.session);
+    if (state.user) { const l = await fetchOrders(); state.myCount = l.length; }
+  } catch (e) { console.warn(e); }
+  updateAvatar();
+  sb.auth.onAuthStateChange((_evt, session) => {
+    state.user = sessionToUser(session);
+    updateAvatar();
+  });
+})();
 
 /* ---------- 9) EMAIL SUBMIT --------------------------------------------- */
 const ejs = CONFIG.emailjs;
@@ -595,37 +633,8 @@ if (emailjsReady) {
   try { window.emailjs.init({ publicKey: ejs.publicKey }); } catch (_) {}
 }
 
-function buildPayload() {
-  const user = currentUser() || { name: '', email: '' };
-  return {
-    order_id: 'KM-' + Date.now().toString(36).toUpperCase().slice(-6),
-    service: form.service.value,
-    name: user.name,
-    email: user.email,
-    timeline: form.timeline.value,
-    brief: form.brief.value.trim(),
-    to_email: CONFIG.adminEmail,
-    date: new Date().toLocaleString(),
-  };
-}
-
-function mailtoFallback(p) {
-  const subject = encodeURIComponent(`New order ${p.order_id} — ${p.service}`);
-  const bodyText = encodeURIComponent(
-    `New project order\n\n` +
-    `Order ID: ${p.order_id}\nService: ${p.service}\nName: ${p.name}\n` +
-    `Email: ${p.email}\nTimeline: ${p.timeline}\nDate: ${p.date}\n\nBrief:\n${p.brief}\n`
-  );
-  // Anchor click opens the mail client without unloading the page.
-  const a = document.createElement('a');
-  a.href = `mailto:${CONFIG.adminEmail}?subject=${subject}&body=${bodyText}`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
-
-function showSuccess(payload) {
-  $('#success-name').textContent = payload.name.split(' ')[0] || 'there';
+function showSuccess(name) {
+  $('#success-name').textContent = (name || '').split(' ')[0] || 'there';
   $('.wizard').hidden = true;
   successEl.hidden = false;
   launchConfetti();
@@ -635,37 +644,42 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!form.consent.checked) { setError('consent', 'Please confirm to continue.'); return; }
   clearError('consent');
+  const u = currentUser();
+  if (!u) { toast('Please log in to place an order.', 'warn'); return; }
 
-  const payload = buildPayload();
+  const order = {
+    user_id: u.id, name: u.name, email: u.email,
+    service: form.service.value, brief: form.brief.value.trim(),
+    timeline: form.timeline.value, status: 'new',
+  };
 
-  // 1) Persist the order against the signed-in account.
-  addOrder({
-    id: payload.order_id,
-    userEmail: payload.email,
-    service: payload.service,
-    name: payload.name,
-    email: payload.email,
-    timeline: payload.timeline,
-    brief: payload.brief,
-    date: Date.now(),
-    status: 'new',
-  });
+  const label = $('.btn__label', btnSubmit), spinner = $('.btn__spinner', btnSubmit);
+  btnSubmit.disabled = true; if (label) label.textContent = 'Sending…'; if (spinner) spinner.hidden = false;
+  const restore = () => { btnSubmit.disabled = false; if (label) label.textContent = 'Submit order'; if (spinner) spinner.hidden = true; };
 
-  // 2) Show the success screen + confetti right away (UX is never blocked).
-  showSuccess(payload);
-
-  // 3) Then deliver the email — EmailJS if configured, otherwise mailto.
+  // 1) Save the order to Supabase (visible to the client and the admin).
   try {
-    if (emailjsReady) {
-      await window.emailjs.send(ejs.serviceId, ejs.templateId, payload);
-      toast('Order sent to Khalil ✓');
-    } else {
-      mailtoFallback(payload);
-    }
+    await addOrderDB(order);
   } catch (err) {
-    console.error('Email send failed, using mailto fallback:', err);
-    toast('Opening your mail app to send the order…', 'warn');
-    mailtoFallback(payload);
+    restore();
+    toast('Could not submit order: ' + err.message, 'warn');
+    return;
+  }
+
+  // 2) Success screen + confetti.
+  state.myCount += 1; updateAvatar();
+  showSuccess(u.name);
+  restore();
+
+  // 3) Optional email notification to the studio (only if EmailJS is configured).
+  if (emailjsReady) {
+    try {
+      await window.emailjs.send(ejs.serviceId, ejs.templateId, {
+        service: order.service, name: order.name, email: order.email,
+        timeline: order.timeline, brief: order.brief,
+        to_email: CONFIG.adminEmail, date: new Date().toLocaleString(),
+      });
+    } catch (err) { console.warn('Email notify failed:', err); }
   }
 });
 
@@ -715,26 +729,6 @@ function launchConfetti() {
   })();
 }
 
-/* ---------- DEMO: seed a sample client account on first visit -----------
-   Lets you try the flow immediately — log in with  demo@client.com / demo1234
-   to see existing orders and their statuses. New visitors can also sign up.
-   ----------------------------------------------------------------------- */
-(async function seed() {
-  if (localStorage.getItem('km_seeded')) return;
-  localStorage.setItem('km_seeded', '1');
-  const email = 'demo@client.com';
-  if (getUsers().some((u) => u.email === email)) return;
-  const users = getUsers();
-  users.push({ name: 'Demo Client', email, pass: await hashPassword('demo1234'), createdAt: Date.now() });
-  saveUsers(users);
-
-  const day = 86400000;
-  const samples = [
-    { id: 'KM-DEMO03', service: 'UI/UX Design',    timeline: '1–2 weeks', brief: 'Mobile app onboarding & design system.',           date: Date.now() - day * 1, status: 'new' },
-    { id: 'KM-DEMO02', service: 'Web Development',  timeline: '2–4 weeks', brief: 'Landing page build with animations.',               date: Date.now() - day * 8, status: 'progress' },
-    { id: 'KM-DEMO01', service: 'Full Package',     timeline: '1–2 months', brief: 'Marketing site + design system for a SaaS launch.', date: Date.now() - day * 24, status: 'done' },
-  ];
-  const list = loadOrders();
-  samples.forEach((s) => list.push({ ...s, userEmail: email, name: 'Demo Client', email }));
-  saveOrders(list);
-})();
+/* Accounts and orders now live in Supabase (real, cross-device).
+   Sign up creates a real account; orders are saved to the database and
+   visible to the client (own orders) and to the admin (all orders). */
