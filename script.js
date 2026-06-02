@@ -59,7 +59,8 @@ function initials(name) {
 function sessionToUser(session) {
   if (!session || !session.user) return null;
   const u = session.user;
-  const name = (u.user_metadata && u.user_metadata.name) || (u.email || '').split('@')[0];
+  const m = u.user_metadata || {};
+  const name = m.name || m.full_name || (u.email || '').split('@')[0];
   return { id: u.id, email: u.email, name };
 }
 
@@ -479,8 +480,10 @@ function setAuthTab(tab) {
   $('#signup-form').hidden = tab !== 'signup';
   $('#forgot-form').hidden = tab !== 'forgot';
   $('#reset-form').hidden = tab !== 'reset';
-  // Hide the Log in / Create account tab bar while resetting a password.
-  const tabs = $('.auth__tabs'); if (tabs) tabs.hidden = (tab === 'forgot' || tab === 'reset');
+  // Hide the tab bar + Google button while resetting / recovering a password.
+  const aux = (tab === 'forgot' || tab === 'reset');
+  const tabs = $('.auth__tabs'); if (tabs) tabs.hidden = aux;
+  const social = $('#auth-social'); if (social) social.hidden = aux;
 }
 
 async function renderDashboard() {
@@ -561,6 +564,17 @@ document.addEventListener('change', async (e) => {
 
 /* --- auth UI wiring --- */
 $$('[data-auth-tab]').forEach((b) => b.addEventListener('click', () => setAuthTab(b.dataset.authTab)));
+
+// Continue with Google (Supabase OAuth).
+const googleBtn = $('#google-btn');
+if (googleBtn) googleBtn.addEventListener('click', async () => {
+  if (!sb) return;
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: location.origin },
+  });
+  if (error) toast('Google sign-in unavailable. Enable it in Supabase first.', 'warn');
+});
 
 // Show/hide password toggles.
 $$('[data-pass-toggle]').forEach((btn) => {

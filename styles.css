@@ -467,6 +467,18 @@ input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius
 .auth__tab { flex: 1; padding: 10px; border: 0; background: none; color: var(--muted); font-weight: 600; font-size: .9rem; border-radius: 24px; transition: .2s; }
 .auth__tab.is-active { background: var(--accent-grad); color: #fff; }
 .auth__form .field { margin-bottom: 16px; }
+/* Google sign-in */
+.auth__social { margin-bottom: 22px; }
+.btn-google {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 13px 18px; border-radius: 30px; border: 1px solid var(--border);
+  background: #fff; color: #1f1f1f; font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 600; font-size: .95rem; cursor: pointer; transition: transform .2s, box-shadow .2s;
+}
+.btn-google:hover { transform: translateY(-2px); box-shadow: 0 10px 26px -12px rgba(0, 0, 0, .6); }
+.auth__or { display: flex; align-items: center; gap: 12px; margin-top: 18px; color: var(--muted); font-size: .8rem; }
+.auth__or::before, .auth__or::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
 .auth__note { color: var(--muted); font-size: .9rem; line-height: 1.55; margin-bottom: 18px; text-align: center; }
 .auth__switch { text-align: center; color: var(--muted); font-size: .88rem; margin-top: 16px; }
 .auth__switch .linkish { color: var(--accent-2); font-weight: 600; }
