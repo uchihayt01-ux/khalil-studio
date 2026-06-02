@@ -168,6 +168,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
     '  col*=mix(0.42,1.0,sideW);',
     '  float vig=smoothstep(1.35,0.35,length(uv-0.5));',
     '  col*=mix(0.65,1.0,vig);',
+    '  col+=(fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)-0.5)/255.0;', // dither kills banding
     '  gl_FragColor=vec4(col,1.0);',
     '}'
   ].join('\n');
@@ -196,10 +197,15 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   const uTime = gl.getUniformLocation(prog, 'u_time');
   const uMouse = gl.getUniformLocation(prog, 'u_mouse');
 
-  const SCALE = 0.6; // render below native res; the silk is soft so it stays crisp-looking
+  // Render at the device's real pixel density (so it's crisp on big / high-DPI
+  // screens), but cap the total pixel count so weak GPUs stay smooth.
+  const MAX_PX = 3000000; // ~1920×1560; above this we scale down gracefully
   function resize() {
-    const w = Math.max(1, Math.floor(window.innerWidth * SCALE));
-    const h = Math.max(1, Math.floor(window.innerHeight * SCALE));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let w = window.innerWidth * dpr, h = window.innerHeight * dpr;
+    const px = w * h;
+    if (px > MAX_PX) { const s = Math.sqrt(MAX_PX / px); w *= s; h *= s; }
+    w = Math.max(1, Math.round(w)); h = Math.max(1, Math.round(h));
     canvas.width = w; canvas.height = h;
     canvas.style.width = '100%'; canvas.style.height = '100%';
     gl.viewport(0, 0, w, h);
