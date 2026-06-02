@@ -407,6 +407,7 @@
             <p class="field-error" data-error="li-pass"></p>
           </div>
           <button type="submit" class="btn btn--primary btn--block">Log in</button>
+          <p class="auth__switch"><button type="button" class="linkish" data-auth-tab="forgot">Forgot password?</button></p>
           <p class="auth__switch">New here? <button type="button" class="linkish" data-auth-tab="signup">Create an account</button></p>
         </form>
 
@@ -438,6 +439,36 @@
           </div>
           <button type="submit" class="btn btn--primary btn--block">Create account</button>
           <p class="auth__switch">Already have an account? <button type="button" class="linkish" data-auth-tab="login">Log in</button></p>
+        </form>
+
+        <!-- Forgot password -->
+        <form id="forgot-form" class="auth__form" novalidate hidden>
+          <p class="auth__note">Enter your email and we'll send you a link to reset your password.</p>
+          <div class="field">
+            <label for="fp-email">Email</label>
+            <input type="email" id="fp-email" name="email" placeholder="you@email.com" required />
+            <p class="field-error" data-error="fp-email"></p>
+          </div>
+          <button type="submit" class="btn btn--primary btn--block">Send reset link</button>
+          <p class="auth__switch"><button type="button" class="linkish" data-auth-tab="login">← Back to log in</button></p>
+        </form>
+
+        <!-- Set a new password (after clicking the reset link) -->
+        <form id="reset-form" class="auth__form" novalidate hidden>
+          <p class="auth__note">Choose a new password for your account.</p>
+          <div class="field field--pass">
+            <label for="rp-pass">New password</label>
+            <input type="password" id="rp-pass" name="password" placeholder="Min. 6 characters" required />
+            <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
+            <p class="field-error" data-error="rp-pass"></p>
+          </div>
+          <div class="field field--pass">
+            <label for="rp-pass2">Confirm new password</label>
+            <input type="password" id="rp-pass2" name="password2" placeholder="Repeat password" required />
+            <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
+            <p class="field-error" data-error="rp-pass2"></p>
+          </div>
+          <button type="submit" class="btn btn--primary btn--block">Update password</button>
         </form>
       </div>
 

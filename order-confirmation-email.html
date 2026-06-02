@@ -1,0 +1,39 @@
+<!--
+  Khalil Studio — ORDER CONFIRMATION email (for EmailJS)
+  Paste into: EmailJS → Email Templates → (your "order" template) → Content (Code/HTML).
+  In the template's settings set:  To Email = {{to_email}}
+  Variables used: {{name}} {{order_id}} {{service}} {{timeline}} {{brief}} {{date}} {{admin_email}}
+-->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0;padding:0;background:#0b0617;">
+  <tr><td align="center" style="padding:32px 16px;">
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:520px;background:#160c2e;border:1px solid #2a1a52;border-radius:18px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
+      <tr><td style="padding:32px 36px 6px 36px;">
+        <table cellpadding="0" cellspacing="0" role="presentation"><tr>
+          <td style="width:34px;height:34px;background:#8b5cf6;border-radius:50%;"></td>
+          <td style="padding-left:12px;color:#f2eeff;font-size:18px;font-weight:bold;">Khalil&nbsp;<span style="color:#9aa0c4;font-weight:normal;font-size:12px;letter-spacing:2px;">STUDIO</span></td>
+        </tr></table>
+      </td></tr>
+      <tr><td style="padding:16px 36px 4px 36px;">
+        <div style="display:inline-block;background:#1f1442;color:#b794ff;font-size:12px;font-weight:bold;letter-spacing:1px;padding:6px 14px;border-radius:20px;">ORDER RECEIVED ✓</div>
+        <h1 style="margin:16px 0 10px 0;color:#f2eeff;font-size:23px;line-height:1.25;">Thanks, {{name}} — your order is in!</h1>
+        <p style="margin:0 0 18px 0;color:#b8b0d4;font-size:15px;line-height:1.6;">
+          I've received your project brief and will reply within 24 hours. You can track its status anytime from your account.
+        </p>
+      </td></tr>
+      <!-- Order summary -->
+      <tr><td style="padding:4px 36px 8px 36px;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border:1px solid #2a1a52;border-radius:12px;overflow:hidden;">
+          <tr><td style="padding:13px 18px;color:#8d84ad;font-size:13px;border-bottom:1px solid #2a1a52;">Order</td><td style="padding:13px 18px;color:#f2eeff;font-size:13px;font-weight:bold;text-align:right;border-bottom:1px solid #2a1a52;">#{{order_id}}</td></tr>
+          <tr><td style="padding:13px 18px;color:#8d84ad;font-size:13px;border-bottom:1px solid #2a1a52;">Service</td><td style="padding:13px 18px;color:#f2eeff;font-size:13px;text-align:right;border-bottom:1px solid #2a1a52;">{{service}}</td></tr>
+          <tr><td style="padding:13px 18px;color:#8d84ad;font-size:13px;border-bottom:1px solid #2a1a52;">Timeline</td><td style="padding:13px 18px;color:#f2eeff;font-size:13px;text-align:right;border-bottom:1px solid #2a1a52;">{{timeline}}</td></tr>
+          <tr><td style="padding:13px 18px;color:#8d84ad;font-size:13px;vertical-align:top;">Brief</td><td style="padding:13px 18px;color:#cfc7e6;font-size:13px;text-align:right;">{{brief}}</td></tr>
+        </table>
+        <p style="margin:14px 0 0 0;color:#6b6486;font-size:12px;">Placed on {{date}}</p>
+      </td></tr>
+      <tr><td style="padding:22px 36px 30px 36px;border-top:1px solid #2a1a52;">
+        <p style="margin:0;color:#8d84ad;font-size:12px;line-height:1.6;">Questions? Reply to this email or reach me at {{admin_email}}.</p>
+      </td></tr>
+    </table>
+    <p style="margin:18px 0 0 0;color:#5a5476;font-size:11px;font-family:Arial,Helvetica,sans-serif;">© Khalil M'hamdi · Khalil Studio</p>
+  </td></tr>
+</table>

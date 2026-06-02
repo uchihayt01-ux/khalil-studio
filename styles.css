@@ -467,6 +467,7 @@ input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius
 .auth__tab { flex: 1; padding: 10px; border: 0; background: none; color: var(--muted); font-weight: 600; font-size: .9rem; border-radius: 24px; transition: .2s; }
 .auth__tab.is-active { background: var(--accent-grad); color: #fff; }
 .auth__form .field { margin-bottom: 16px; }
+.auth__note { color: var(--muted); font-size: .9rem; line-height: 1.55; margin-bottom: 18px; text-align: center; }
 .auth__switch { text-align: center; color: var(--muted); font-size: .88rem; margin-top: 16px; }
 .auth__switch .linkish { color: var(--accent-2); font-weight: 600; }
 

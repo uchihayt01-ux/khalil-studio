@@ -8,13 +8,16 @@
 /* ---------- 1) CONFIG ---------------------------------------------------- */
 const CONFIG = {
   adminEmail: 'khalilmhamdi4work@gmail.com',
-  // To send real emails, create a free EmailJS account (https://emailjs.com),
-  // then fill these in. If left blank, the form falls back to opening the
-  // user's mail client (mailto) with the order pre-filled — so it works either way.
+  // Transactional emails to the CLIENT (order confirmation + login alert).
+  // Create a free EmailJS account (https://emailjs.com), add a service and two
+  // templates, then fill these in. If blank, these emails are simply skipped.
   emailjs: {
     publicKey: '',     // e.g. 'AbCd1234...'
     serviceId: '',     // e.g. 'service_xxx'
-    templateId: '',    // e.g. 'template_xxx'
+    templates: {
+      order: '',       // template id for the "order received" email
+      login: '',       // template id for the "new sign-in" email
+    },
   },
 };
 
@@ -427,8 +430,9 @@ function shortId(id) { return (id || '').replace(/-/g, '').slice(0, 6).toUpperCa
 
 /* --- Supabase data helpers --- */
 async function addOrderDB(order) {
-  const { error } = await sb.from('orders').insert(order);
+  const { data, error } = await sb.from('orders').insert(order).select().single();
   if (error) throw new Error(error.message);
+  return data;
 }
 async function fetchOrders() {            // RLS returns own orders for clients, all for admin
   const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending: false });
@@ -467,6 +471,10 @@ function setAuthTab(tab) {
   $$('.auth__tab').forEach((b) => b.classList.toggle('is-active', b.dataset.authTab === tab));
   $('#login-form').hidden = tab !== 'login';
   $('#signup-form').hidden = tab !== 'signup';
+  $('#forgot-form').hidden = tab !== 'forgot';
+  $('#reset-form').hidden = tab !== 'reset';
+  // Hide the Log in / Create account tab bar while resetting a password.
+  const tabs = $('.auth__tabs'); if (tabs) tabs.hidden = (tab === 'forgot' || tab === 'reset');
 }
 
 async function renderDashboard() {
@@ -571,6 +579,13 @@ $('#login-form').addEventListener('submit', async (e) => {
     await renderAccount();
     updateAvatar();
     toast(isAdmin() ? 'Welcome, admin ★' : 'Welcome back ✓');
+    if (!isAdmin() && state.user) {
+      sendEmail(ejs.templates.login, {
+        to_email: state.user.email, to_name: state.user.name,
+        name: state.user.name, email: state.user.email,
+        date: new Date().toLocaleString(),
+      });
+    }
   } catch (err) {
     authError('li-pass', err.message);
   }
@@ -604,6 +619,37 @@ $('#signup-form').addEventListener('submit', async (e) => {
   }
 });
 
+// Forgot password — email a reset link.
+$('#forgot-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  authError('fp-email');
+  const email = e.target.email.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authError('fp-email', 'Enter a valid email.'); return; }
+  if (!sb) return;
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin });
+  if (error) { authError('fp-email', error.message); return; }
+  e.target.reset();
+  setAuthTab('login');
+  toast('Reset link sent ✓ Check your email (and spam).');
+});
+
+// Set a new password (after returning from the reset link).
+$('#reset-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  authError('rp-pass'); authError('rp-pass2');
+  const p1 = e.target.password.value, p2 = e.target.password2.value;
+  if (p1.length < 6) { authError('rp-pass', 'At least 6 characters.'); return; }
+  if (p1 !== p2) { authError('rp-pass2', 'Passwords don’t match.'); return; }
+  if (!sb) return;
+  const { error } = await sb.auth.updateUser({ password: p1 });
+  if (error) { authError('rp-pass2', error.message); return; }
+  e.target.reset();
+  history.replaceState(null, '', location.pathname + location.search);
+  $('.auth__tabs').hidden = false;
+  await renderAccount();
+  toast('Password updated ✓ You are signed in.');
+});
+
 function doLogout() {
   logout().then(() => { updateAvatar(); renderAccount(); toast('Logged out.'); });
 }
@@ -611,32 +657,54 @@ $('#logout-btn').addEventListener('click', doLogout);
 $('#admin-logout').addEventListener('click', doLogout);
 $('#admin-refresh').addEventListener('click', () => renderAdmin());
 
+// Show the "set new password" form inside the account modal.
+function openResetForm() {
+  $('#auth-view').hidden = false;
+  $('#dash-view').hidden = true;
+  $('#admin-view').hidden = true;
+  setAuthTab('reset');
+  openModal(accountModal);
+}
+
 /* --- initialise the session on page load --- */
 (async function initAuth() {
   if (!sb) { updateAvatar(); console.warn('Supabase not loaded.'); return; }
-  // True when the user has just arrived via the email-confirmation link.
-  const justConfirmed = /access_token|type=signup/.test(location.hash);
+  const hash = location.hash;
+  const justConfirmed = /type=signup/.test(hash);   // arrived via confirm-signup link
+  const isRecovery = /type=recovery/.test(hash);    // arrived via reset-password link
+
+  // Register first so we don't miss the PASSWORD_RECOVERY event.
+  sb.auth.onAuthStateChange((evt, session) => {
+    state.user = sessionToUser(session);
+    updateAvatar();
+    if (evt === 'PASSWORD_RECOVERY') openResetForm();
+  });
+
   try {
     const { data } = await sb.auth.getSession();
     state.user = sessionToUser(data.session);
     if (state.user) { const l = await fetchOrders(); state.myCount = l.length; }
   } catch (e) { console.warn(e); }
   updateAvatar();
-  if (justConfirmed && state.user) {
+
+  if (isRecovery) {
+    openResetForm();
+  } else if (justConfirmed && state.user) {
     toast('Email confirmed ✓ You are now signed in.');
     history.replaceState(null, '', location.pathname + location.search); // clean the URL
   }
-  sb.auth.onAuthStateChange((_evt, session) => {
-    state.user = sessionToUser(session);
-    updateAvatar();
-  });
 })();
 
 /* ---------- 9) EMAIL SUBMIT --------------------------------------------- */
 const ejs = CONFIG.emailjs;
-const emailjsReady = !!(window.emailjs && ejs.publicKey && ejs.serviceId && ejs.templateId);
+const emailjsReady = !!(window.emailjs && ejs.publicKey && ejs.serviceId);
 if (emailjsReady) {
   try { window.emailjs.init({ publicKey: ejs.publicKey }); } catch (_) {}
+}
+// Send a templated EmailJS email; silently no-ops when EmailJS isn't configured.
+function sendEmail(templateId, params) {
+  if (!emailjsReady || !templateId) return Promise.resolve();
+  return window.emailjs.send(ejs.serviceId, templateId, params).catch((e) => console.warn('Email failed:', e));
 }
 
 function showSuccess(name) {
@@ -664,8 +732,9 @@ form.addEventListener('submit', async (e) => {
   const restore = () => { btnSubmit.disabled = false; if (label) label.textContent = 'Submit order'; if (spinner) spinner.hidden = true; };
 
   // 1) Save the order to Supabase (visible to the client and the admin).
+  let saved;
   try {
-    await addOrderDB(order);
+    saved = await addOrderDB(order);
   } catch (err) {
     restore();
     toast('Could not submit order: ' + err.message, 'warn');
@@ -677,16 +746,13 @@ form.addEventListener('submit', async (e) => {
   showSuccess(u.name);
   restore();
 
-  // 3) Optional email notification to the studio (only if EmailJS is configured).
-  if (emailjsReady) {
-    try {
-      await window.emailjs.send(ejs.serviceId, ejs.templateId, {
-        service: order.service, name: order.name, email: order.email,
-        timeline: order.timeline, brief: order.brief,
-        to_email: CONFIG.adminEmail, date: new Date().toLocaleString(),
-      });
-    } catch (err) { console.warn('Email notify failed:', err); }
-  }
+  // 3) Email the client an order confirmation (HTML template in EmailJS).
+  sendEmail(ejs.templates.order, {
+    to_email: u.email, to_name: u.name, name: u.name, email: u.email,
+    order_id: saved && saved.id ? shortId(saved.id) : '',
+    service: order.service, timeline: order.timeline, brief: order.brief,
+    date: new Date().toLocaleString(), admin_email: CONFIG.adminEmail,
+  });
 });
 
 /* ---------- 10) CONFETTI ------------------------------------------------- */
