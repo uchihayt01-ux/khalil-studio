@@ -20,8 +20,13 @@
   --mx: 50vw; --my: 30vh; /* live cursor position (updated in JS) */
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 [hidden] { display: none !important; }
+
+/* No tap rectangle / click outline on mobile — keep a clean focus ring only for keyboard users. */
+button, a, label, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 html { scroll-behavior: smooth; }
 
 body {
