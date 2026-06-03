@@ -288,29 +288,26 @@ const btnNext = $('#wiz-next');
 const btnSubmit = $('#wiz-submit');
 const successEl = $('#success');
 let current = 1;
-const TOTAL = 4;
+const TOTAL = 3;
 
-// Add-on options shown on the Customize step, per service type.
-const ADDONS = {
-  'UI/UX Design': ['Wireframes', 'Design system', 'Interactive prototype', 'Mobile screens', 'Desktop screens', 'Logo & branding'],
-  'Web Development': ['Responsive build', 'CMS / Dashboard', 'Animations', 'SEO setup', 'Contact form', 'E-commerce'],
-  'Full Package': ['Research & strategy', 'Design system', 'Development', 'Animations', 'SEO setup', 'Hosting setup'],
-};
-function renderAddons() {
-  const svc = form.service.value;
-  const box = $('#addons-list');
-  // Only rebuild when the chosen service changed (keeps the user's ticks).
-  if (box.dataset.svc === svc) return;
-  const list = ADDONS[svc] || ['Wireframes', 'Development', 'Animations', 'SEO setup'];
-  $('#cust-service').textContent = svc || 'order';
-  box.dataset.svc = svc;
-  box.innerHTML = list.map((a) =>
-    `<label class="addon"><input type="checkbox" name="addon" value="${a}" /><span>${a}</span></label>`
+// Country codes for the phone field (Algeria first as default).
+const COUNTRIES = [
+  ['🇩🇿', '+213', 'Algeria'], ['🇫🇷', '+33', 'France'], ['🇲🇦', '+212', 'Morocco'],
+  ['🇹🇳', '+216', 'Tunisia'], ['🇺🇸', '+1', 'USA / Canada'], ['🇬🇧', '+44', 'UK'],
+  ['🇪🇸', '+34', 'Spain'], ['🇩🇪', '+49', 'Germany'], ['🇮🇹', '+39', 'Italy'],
+  ['🇧🇪', '+32', 'Belgium'], ['🇳🇱', '+31', 'Netherlands'], ['🇨🇭', '+41', 'Switzerland'],
+  ['🇸🇦', '+966', 'Saudi Arabia'], ['🇦🇪', '+971', 'UAE'], ['🇶🇦', '+974', 'Qatar'],
+  ['🇪🇬', '+20', 'Egypt'], ['🇹🇷', '+90', 'Turkey'], ['🇱🇾', '+218', 'Libya'],
+  ['🇲🇷', '+222', 'Mauritania'], ['🇸🇳', '+221', 'Senegal'], ['🇶🇦', '+974', 'Qatar'],
+];
+(function buildCountrySelect() {
+  const sel = $('#o-cc');
+  if (!sel) return;
+  sel.innerHTML = COUNTRIES.map(([flag, dial, name]) =>
+    `<option value="${dial}">${flag} ${dial}</option>`
   ).join('');
-}
-function getAddons() {
-  return $$('#addons-list input[name="addon"]:checked').map((c) => c.value);
-}
+  sel.value = '+213';
+})();
 
 /* --- modal open/close plumbing --- */
 function openModal(modal) {
@@ -383,7 +380,6 @@ function showStep(n) {
   btnSubmit.hidden = n !== TOTAL;
   const count = $('#wiz-count');
   if (count) count.textContent = `Step ${n} of ${TOTAL}`;
-  if (n === 2) renderAddons();
   if (n === TOTAL) buildSummary();
 }
 
@@ -406,13 +402,13 @@ function validateStep(n) {
     clearError('service');
     return true;
   }
-  if (n === 3) {
+  if (n === 2) {
     let ok = true;
     if (form.phone.value.replace(/\D/g, '').length < 6) { setError('phone', 'Enter a valid phone number.'); ok = false; } else clearError('phone');
     if (form.brief.value.trim().length < 10) { setError('brief', 'Tell me a bit more (10+ characters).'); ok = false; } else clearError('brief');
     return ok;
   }
-  return true; // step 2 (customize) is optional
+  return true;
 }
 
 btnNext.addEventListener('click', () => {
@@ -420,27 +416,24 @@ btnNext.addEventListener('click', () => {
 });
 btnBack.addEventListener('click', () => showStep(Math.max(current - 1, 1)));
 
-// Pages stepper (+/−).
-$$('[data-step-pages]').forEach((b) => b.addEventListener('click', () => {
-  const input = $('#o-pages');
-  const v = Math.min(50, Math.max(1, (parseInt(input.value, 10) || 1) + (+b.dataset.stepPages)));
-  input.value = v;
-}));
-
 // Live: clear service error on pick.
 $$('input[name="service"]', form).forEach((r) => r.addEventListener('change', () => clearError('service')));
+
+// Full phone = country code + number.
+function fullPhone() {
+  const cc = form.cc ? form.cc.value : '';
+  const num = form.phone.value.trim();
+  return num ? `${cc} ${num}`.trim() : '';
+}
 
 function buildSummary() {
   const dl = $('#summary');
   const user = currentUser() || { name: '—', email: '—' };
-  const addons = getAddons();
   const rows = [
     ['Service', form.service.value || '—'],
-    ['Add-ons', addons.length ? addons.join(', ') : 'None'],
-    ['Pages / screens', form.pages.value || '1'],
     ['Name', user.name],
     ['Email', user.email],
-    ['Phone', form.phone.value.trim() || '—'],
+    ['Phone', fullPhone() || '—'],
     ['Timeline', form.timeline.value || '—'],
     ['Brief', form.brief.value.trim() || '—'],
   ];
@@ -452,8 +445,7 @@ function buildSummary() {
 function resetWizard() {
   form.reset();
   ['service', 'brief', 'phone', 'consent'].forEach(clearError);
-  const box = $('#addons-list'); if (box) { box.dataset.svc = ''; box.innerHTML = ''; }
-  const pages = $('#o-pages'); if (pages) pages.value = 1;
+  if (form.cc) form.cc.value = '+213';
   successEl.hidden = true;
   form.hidden = false;
   $('.wizard').hidden = false;
@@ -553,7 +545,7 @@ async function renderDashboard() {
   body.innerHTML = list.map((o) => `
       <tr>
         <td><span class="o-id">#${shortId(o.id)}</span><span class="o-brief">${escapeHtml(o.brief || '')}</span></td>
-        <td>${escapeHtml(o.service || '')}${o.addons ? `<span class="o-brief">+ ${escapeHtml(o.addons)}</span>` : ''}</td>
+        <td>${escapeHtml(o.service || '')}</td>
         <td>${escapeHtml(o.timeline || '—')}</td>
         <td>${fmtDate(o.created_at)}</td>
         <td>${statusBadge(o.status)}</td>
@@ -577,7 +569,7 @@ async function renderAdmin() {
   oBody.innerHTML = orders.map((o) => `
       <tr>
         <td><span class="o-id">${escapeHtml(o.name || '—')}</span><span class="o-brief">${escapeHtml(o.email || '')}</span><span class="o-brief">${escapeHtml(o.phone || '')}</span></td>
-        <td>${escapeHtml(o.service || '')}<span class="o-brief">${escapeHtml(o.brief || '')}</span>${o.addons ? `<span class="o-brief">+ ${escapeHtml(o.addons)} · ${o.pages || 1} pages</span>` : `<span class="o-brief">${o.pages || 1} pages</span>`}</td>
+        <td>${escapeHtml(o.service || '')}<span class="o-brief">${escapeHtml(o.brief || '')}</span></td>
         <td>${escapeHtml(o.timeline || '—')}</td>
         <td>${fmtDate(o.created_at)}</td>
         <td>
@@ -788,9 +780,7 @@ form.addEventListener('submit', async (e) => {
     user_id: u.id, name: u.name, email: u.email,
     service: form.service.value, brief: form.brief.value.trim(),
     timeline: form.timeline.value, status: 'new',
-    phone: form.phone.value.trim(),
-    pages: parseInt(form.pages.value, 10) || 1,
-    addons: getAddons().join(', '),
+    phone: fullPhone(),
   };
 
   const label = $('.btn__label', btnSubmit), spinner = $('.btn__spinner', btnSubmit);
@@ -817,8 +807,7 @@ form.addEventListener('submit', async (e) => {
     to_email: u.email, to_name: u.name, name: u.name, email: u.email,
     order_id: saved && saved.id ? shortId(saved.id) : '',
     service: order.service, timeline: order.timeline, brief: order.brief,
-    phone: order.phone, pages: order.pages, addons: order.addons || 'None',
-    date: new Date().toLocaleString(), admin_email: CONFIG.adminEmail,
+    phone: order.phone, date: new Date().toLocaleString(), admin_email: CONFIG.adminEmail,
   });
 });
 

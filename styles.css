@@ -376,10 +376,15 @@ body.ready .hero__inner > .hero__anim:nth-child(5) { animation-delay: .75s; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .field { margin-bottom: 20px; }
 .field label { display: block; font-size: .88rem; font-weight: 500; margin-bottom: 8px; color: var(--text); }
-.field input[type="text"], .field input[type="email"], .field input[type="password"], .field textarea {
+.field input[type="text"], .field input[type="email"], .field input[type="password"], .field input[type="tel"], .field textarea {
   width: 100%; padding: 13px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);
   background: var(--surface); color: var(--text); font-family: inherit; font-size: .95rem; transition: .2s; resize: vertical;
 }
+
+/* Phone field: country-code select + number */
+.phone-row { display: flex; gap: 10px; }
+.phone-row .phone-cc { width: 116px; flex: none; padding-right: 30px; }
+.phone-row input[type="tel"] { flex: 1; }
 .field input::placeholder, .field textarea::placeholder { color: #6a6a82; }
 .field input:focus, .field textarea:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139, 92, 246, .22); background: var(--surface-2); }
 .field.has-error input, .field.has-error textarea { border-color: var(--accent-3); box-shadow: 0 0 0 3px rgba(217, 70, 239, .18); }

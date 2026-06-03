@@ -22,8 +22,6 @@ create table if not exists public.orders (
   service    text,
   brief      text,
   timeline   text,
-  pages      integer default 1,
-  addons     text,
   status     text default 'new',
   created_at timestamptz default now()
 );
