@@ -66,7 +66,11 @@ function sessionToUser(session) {
 
 async function signup({ name, email, password }) {
   if (!sb) throw new Error('Service unavailable. Please try again later.');
-  const { data, error } = await sb.auth.signUp({ email, password, options: { data: { name } } });
+  const { data, error } = await sb.auth.signUp({
+    email, password,
+    // Send the confirmation link back to THIS site (not localhost).
+    options: { data: { name }, emailRedirectTo: location.origin },
+  });
   if (error) throw new Error(error.message);
   if (!data.session) {
     // Email-confirmation is enabled on the project.
@@ -275,6 +279,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
 /* ---------- 7) ORDER WIZARD --------------------------------------------- */
 const orderModal = $('#order-modal');
 const accountModal = $('#account-modal');
+const confirmedModal = $('#confirmed-modal');
 const form = $('#order-form');
 const steps = $$('#steps .step');
 const panes = $$('.wstep');
@@ -333,6 +338,7 @@ document.addEventListener('click', (e) => {
   if (closeO) { e.preventDefault(); closeModal(orderModal); }
   if (openA) { e.preventDefault(); renderAccount(); openModal(accountModal); }
   if (closeA) { e.preventDefault(); closeModal(accountModal); }
+  if (e.target.closest('[data-close-confirmed]')) { e.preventDefault(); closeModal(confirmedModal); }
 });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
@@ -709,9 +715,9 @@ function openResetForm() {
 
   if (isRecovery) {
     openResetForm();
-  } else if (justConfirmed && state.user) {
-    toast('Email confirmed ✓ You are now signed in.');
+  } else if (justConfirmed) {
     history.replaceState(null, '', location.pathname + location.search); // clean the URL
+    openModal(confirmedModal); // nice "Email confirmed!" screen
   }
 })();
 

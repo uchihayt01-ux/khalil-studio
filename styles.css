@@ -493,6 +493,14 @@ input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius
 /* Logged-out nav avatar */
 .nav__avatar.is-guest { background: var(--surface-2); border: 1px solid var(--border); font-size: 1rem; }
 
+/* Email confirmed modal */
+.confirmed { max-width: 440px; text-align: center; }
+.confirmed__check { width: 80px; height: 80px; border-radius: 50%; display: grid; place-items: center; margin: 6px auto 16px; background: var(--accent-grad); color: #fff; font-size: 2.4rem; box-shadow: 0 16px 40px -10px var(--accent); animation: popcheck .5s var(--ease); }
+.confirmed h2 { font-size: 1.7rem; }
+.confirmed p { color: var(--muted); margin: 12px 0 22px; line-height: 1.6; }
+.confirmed .btn--primary { width: 100%; }
+.confirmed .btn--text { width: 100%; margin-top: 6px; }
+
 /* ---------- Toast ---------- */
 .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px); z-index: 200; background: var(--surface-2); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: 30px; padding: 13px 24px; font-size: .9rem; box-shadow: 0 20px 50px -16px rgba(0, 0, 0, .7); opacity: 0; transition: opacity .3s, transform .3s var(--ease); }
 .toast.is-show { opacity: 1; transform: translateX(-50%) translateY(0); }
