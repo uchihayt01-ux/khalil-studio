@@ -218,7 +218,33 @@ body.ready .hero__inner > .hero__anim:nth-child(5) { animation-delay: .75s; }
 }
 .svc:hover { transform: translateY(-8px); border-color: rgba(0, 210, 255, .4); box-shadow: 0 24px 50px -20px rgba(0, 0, 0, .7); }
 .svc--featured { border-color: rgba(108, 92, 231, .5); background: linear-gradient(160deg, rgba(108, 92, 231, .12), var(--surface)); }
-.svc__icon { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; background: var(--accent-grad); color: #fff; font-size: 1.4rem; margin-bottom: 20px; }
+.svc__icon {
+  position: relative; width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center;
+  background: var(--accent-grad); color: #fff; margin-bottom: 20px;
+  box-shadow: 0 10px 26px -10px var(--accent);
+  transition: transform .4s var(--ease), box-shadow .4s;
+  animation: svc-bob 4.5s ease-in-out infinite;
+}
+.svc__icon svg { width: 28px; height: 28px; position: relative; z-index: 1; }
+/* pulsing "radar" glow ring behind each icon */
+.svc__icon::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--accent-grad);
+  z-index: 0; animation: svc-pulse 2.8s ease-in-out infinite;
+}
+.services .svc:nth-child(2) .svc__icon, .services .svc:nth-child(2) .svc__icon::after { animation-delay: -1.4s; }
+.services .svc:nth-child(3) .svc__icon, .services .svc:nth-child(3) .svc__icon::after { animation-delay: -2.6s; }
+
+@keyframes svc-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes svc-pulse { 0% { transform: scale(1); opacity: .55; } 70%, 100% { transform: scale(1.55); opacity: 0; } }
+
+/* hover: icon pops and the glyph wiggles */
+.svc:hover .svc__icon { animation: none; transform: translateY(-7px) scale(1.12) rotate(-6deg); box-shadow: 0 18px 40px -10px var(--accent); }
+.svc:hover .svc__icon svg { animation: svc-wiggle .6s var(--ease); }
+@keyframes svc-wiggle { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(9deg); } 65% { transform: rotate(-9deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .svc__icon, .svc__icon::after { animation: none; }
+}
 .svc h3 { font-size: 1.3rem; margin-bottom: 10px; }
 .svc p { color: var(--muted); font-size: .94rem; margin-bottom: 20px; }
 .svc__cta { background: none; border: 0; color: var(--accent-2); font-weight: 600; font-size: .92rem; transition: gap .2s, color .2s; }
