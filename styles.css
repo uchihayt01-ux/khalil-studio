@@ -576,7 +576,9 @@ input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius
   }
   .nav__center.open { transform: translateX(0); }
   .nav__only-mobile { display: block; }
-  .nav__right { display: none; }
+  /* Keep only the language button on the bar; order/account live in the drawer. */
+  .nav__right { display: flex; gap: 10px; }
+  .nav__right .nav__order, .nav__right .nav__account { display: none; }
   .nav__toggle { display: flex; z-index: 60; }
   .nav__toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .nav__toggle.open span:nth-child(2) { opacity: 0; }
@@ -630,8 +632,8 @@ html[lang="ar"] .hero__title { letter-spacing: 0; }
 [dir="rtl"] #o-phone, [dir="rtl"] input[type="email"], [dir="rtl"] input[type="tel"],
 [dir="rtl"] .order-as span, [dir="rtl"] .footer__col a[href^="mailto"] { direction: ltr; text-align: right; }
 [dir="rtl"] .phone-row { flex-direction: row-reverse; }
-[dir="rtl"] .nav__center { left: 0; right: auto; }
+/* Mobile drawer slides from the left in RTL (desktop centering stays untouched). */
 @media (max-width: 860px) {
-  [dir="rtl"] .nav__center { inset: 0 auto 0 0; transform: translateX(-100%); border-left: 0; border-right: 1px solid var(--border); }
+  [dir="rtl"] .nav__center { inset: 0 auto 0 0; left: 0; right: auto; transform: translateX(-100%); border-left: 0; border-right: 1px solid var(--border); }
   [dir="rtl"] .nav__center.open { transform: translateX(0); }
 }
