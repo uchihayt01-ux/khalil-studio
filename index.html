@@ -273,20 +273,23 @@
           </div>
           <ol class="steps" id="steps">
             <li class="step is-active" data-step="1"><span>1</span>Service</li>
-            <li class="step" data-step="2"><span>2</span>Details</li>
-            <li class="step" data-step="3"><span>3</span>Confirm</li>
+            <li class="step" data-step="2"><span>2</span>Customize</li>
+            <li class="step" data-step="3"><span>3</span>Details</li>
+            <li class="step" data-step="4"><span>4</span>Confirm</li>
           </ol>
         </header>
 
         <form id="order-form" novalidate>
           <!-- Step 1: Service -->
           <section class="wstep is-active" data-pane="1">
-            <p class="wstep__hint">Choose what you need. You can fine-tune the brief next.</p>
+            <p class="wstep__hint">Choose what you need. You can customize it next.</p>
             <div class="svc-picker" id="svc-picker">
               <label class="svc-opt">
                 <input type="radio" name="service" value="UI/UX Design" required />
                 <div class="svc-opt__card">
-                  <span class="svc-opt__icon">✦</span>
+                  <span class="svc-opt__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+                  </span>
                   <h4>UI/UX Design</h4>
                   <p>Wireframes, design systems &amp; high-fidelity UI.</p>
                   <span class="svc-opt__check">✓</span>
@@ -295,7 +298,9 @@
               <label class="svc-opt">
                 <input type="radio" name="service" value="Web Development" />
                 <div class="svc-opt__card">
-                  <span class="svc-opt__icon">◆</span>
+                  <span class="svc-opt__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                  </span>
                   <h4>Web Development</h4>
                   <p>Responsive, fast, accessible front-end builds.</p>
                   <span class="svc-opt__check">✓</span>
@@ -304,7 +309,9 @@
               <label class="svc-opt">
                 <input type="radio" name="service" value="Full Package" />
                 <div class="svc-opt__card">
-                  <span class="svc-opt__icon">✺</span>
+                  <span class="svc-opt__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.27 6.96 8.73 5.05 8.73-5.05"/><path d="M12 22.08V12"/></svg>
+                  </span>
                   <h4>Full Package</h4>
                   <p>Design + development, end to end.</p>
                   <span class="svc-opt__check">✓</span>
@@ -314,8 +321,22 @@
             <p class="field-error" data-error="service"></p>
           </section>
 
-          <!-- Step 2: Details -->
+          <!-- Step 2: Customize -->
           <section class="wstep" data-pane="2">
+            <p class="wstep__hint">Customize your <strong id="cust-service">order</strong> — pick what to include.</p>
+            <div class="addons" id="addons-list"></div>
+            <div class="field">
+              <label for="o-pages">How many pages / screens?</label>
+              <div class="stepper">
+                <button type="button" class="stepper__btn" data-step-pages="-1" aria-label="Fewer">−</button>
+                <input type="number" id="o-pages" name="pages" min="1" max="50" value="1" readonly />
+                <button type="button" class="stepper__btn" data-step-pages="1" aria-label="More">+</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Step 3: Details -->
+          <section class="wstep" data-pane="3">
             <div class="order-as" id="order-as">
               <span class="order-as__avatar" id="order-as-avatar"></span>
               <div>
@@ -323,6 +344,11 @@
                 <span id="order-as-email"></span>
               </div>
               <em>Ordering as</em>
+            </div>
+            <div class="field">
+              <label for="o-phone">Phone number</label>
+              <input type="tel" id="o-phone" name="phone" placeholder="+213 6 00 00 00 00" required />
+              <p class="field-error" data-error="phone"></p>
             </div>
             <div class="field">
               <label for="o-brief">Project brief</label>
@@ -341,8 +367,8 @@
             </div>
           </section>
 
-          <!-- Step 3: Confirm -->
-          <section class="wstep" data-pane="3">
+          <!-- Step 4: Confirm -->
+          <section class="wstep" data-pane="4">
             <p class="wstep__hint">Review your order before sending.</p>
             <dl class="summary" id="summary"></dl>
             <label class="consent">

@@ -352,6 +352,26 @@ body.ready .hero__inner > .hero__anim:nth-child(5) { animation-delay: .75s; }
 .field select:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139, 92, 246, .22); }
 .field select option { background: #1a1030; color: var(--text); }
 
+/* Service icons (SVG) */
+.svc-opt__icon svg { width: 22px; height: 22px; }
+.svc__icon svg { width: 26px; height: 26px; }
+
+/* Customize step: add-on chips + pages stepper */
+.addons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+.addon { cursor: pointer; }
+.addon input { position: absolute; opacity: 0; pointer-events: none; }
+.addon span { display: inline-block; padding: 10px 16px; border: 1px solid var(--border); border-radius: 30px; background: var(--surface); color: var(--muted); font-size: .88rem; font-weight: 500; transition: .2s; }
+.addon span::before { content: "+ "; opacity: .55; }
+.addon:hover span { color: var(--text); border-color: var(--accent-2); transform: translateY(-2px); }
+.addon input:checked + span { background: linear-gradient(160deg, rgba(124, 58, 237, .22), var(--surface)); border-color: var(--accent); color: var(--text); }
+.addon input:checked + span::before { content: "✓ "; opacity: 1; color: var(--accent-2); }
+
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 30px; overflow: hidden; background: var(--surface); }
+.stepper__btn { width: 44px; height: 44px; border: 0; background: none; color: var(--text); font-size: 1.3rem; cursor: pointer; transition: background .2s; }
+.stepper__btn:hover { background: var(--surface-2); }
+.stepper input { width: 58px; text-align: center; border: 0; background: none; color: var(--text); font-family: "Plus Jakarta Sans", sans-serif; font-weight: 700; font-size: 1rem; -moz-appearance: textfield; }
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
 /* Fields */
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .field { margin-bottom: 20px; }

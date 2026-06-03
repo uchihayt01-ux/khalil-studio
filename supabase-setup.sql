@@ -18,9 +18,12 @@ create table if not exists public.orders (
   user_id    uuid references auth.users(id) on delete cascade,
   name       text,
   email      text,
+  phone      text,
   service    text,
   brief      text,
   timeline   text,
+  pages      integer default 1,
+  addons     text,
   status     text default 'new',
   created_at timestamptz default now()
 );
