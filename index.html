@@ -13,7 +13,7 @@
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <!-- EmailJS SDK (optional — see CONFIG in script.js). Falls back to mailto if not configured. -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -36,15 +36,17 @@
     <a href="#hero" class="nav__logo"><span class="nav__mark"></span>Khalil<small>studio</small></a>
 
     <nav class="nav__center" id="nav-links">
-      <a href="#portfolio">Portfolio</a>
-      <a href="#services">Services</a>
-      <a href="#about">About</a>
-      <a href="#hero" class="nav__only-mobile" data-open-order>Order Now</a>
-      <a href="#hero" class="nav__only-mobile" data-open-account>My Account</a>
+      <a href="#portfolio" data-i18n="nav.portfolio">Portfolio</a>
+      <a href="#services" data-i18n="nav.services">Services</a>
+      <a href="#about" data-i18n="nav.about">About</a>
+      <a href="#hero" class="nav__only-mobile" data-open-order data-i18n="nav.order">Order Now</a>
+      <a href="#hero" class="nav__only-mobile" data-open-account data-i18n="nav.account">My Account</a>
+      <button class="nav__lang nav__only-mobile" data-lang-toggle><span data-lang-label>ع</span></button>
     </nav>
 
     <div class="nav__right">
-      <button class="nav__order" data-open-order>Order Now</button>
+      <button class="nav__lang" data-lang-toggle aria-label="Switch language"><span data-lang-label>ع</span></button>
+      <button class="nav__order" data-open-order data-i18n="nav.order">Order Now</button>
       <button class="nav__account" data-open-account aria-label="My Account">
         <span class="nav__avatar" id="nav-avatar">KM</span>
       </button>
@@ -59,22 +61,22 @@
     <!-- ===== Hero ===== -->
     <section class="hero" id="hero">
       <div class="hero__inner">
-        <p class="hero__eyebrow hero__anim">DESIGN &amp; BUILD YOUR NEXT PRODUCT</p>
-        <h1 class="hero__title hero__anim">
+        <p class="hero__eyebrow hero__anim" data-i18n="hero.eyebrow">DESIGN &amp; BUILD YOUR NEXT PRODUCT</p>
+        <h1 class="hero__title hero__anim" data-i18n="hero.title">
           A new way to think and create<br /><span class="grad">with design &amp; code</span>
         </h1>
-        <p class="hero__lead hero__anim">
+        <p class="hero__lead hero__anim" data-i18n="hero.lead">
           Front-End Development &amp; UI/UX Design studio by <strong>Khalil M'hamdi</strong>.
           Browse the work, or start an order in under two minutes.
         </p>
         <div class="hero__actions hero__anim">
-          <button class="btn btn--pill" data-open-order>Order now</button>
-          <a href="#portfolio" class="btn btn--text">View Portfolio</a>
+          <button class="btn btn--pill" data-open-order data-i18n="hero.order">Order now</button>
+          <a href="#portfolio" class="btn btn--text" data-i18n="hero.view">View Portfolio</a>
         </div>
         <div class="hero__stats hero__anim">
-          <div><span>5+</span>Years experience</div>
-          <div><span>20+</span>Projects shipped</div>
-          <div><span>4.9</span>Avg. rating</div>
+          <div><span>5+</span><span data-i18n="hero.stat1">Years experience</span></div>
+          <div><span>20+</span><span data-i18n="hero.stat2">Projects shipped</span></div>
+          <div><span>4.9</span><span data-i18n="hero.stat3">Avg. rating</span></div>
         </div>
       </div>
       <a href="#portfolio" class="hero__scroll" aria-label="Scroll down"><span class="hero__mouse"></span></a>
@@ -84,32 +86,32 @@
     <section class="section" id="services">
       <div class="section__head reveal">
         <span class="section__num">01</span>
-        <h2 class="section__title">What I do</h2>
+        <h2 class="section__title" data-i18n="svc.head">What I do</h2>
       </div>
       <div class="services">
         <article class="svc reveal">
           <div class="svc__icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
           </div>
-          <h3>UI/UX Design</h3>
-          <p>Research, wireframes, design systems and pixel-perfect high-fidelity interfaces for web &amp; mobile.</p>
-          <button class="svc__cta" data-open-order data-preset="design">Order design →</button>
+          <h3 data-i18n="svc.design.t">UI/UX Design</h3>
+          <p data-i18n="svc.design.d">Research, wireframes, design systems and pixel-perfect high-fidelity interfaces for web &amp; mobile.</p>
+          <button class="svc__cta" data-open-order data-preset="design" data-i18n="svc.design.cta">Order design →</button>
         </article>
         <article class="svc reveal svc--featured">
           <div class="svc__icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
           </div>
-          <h3>Web Development</h3>
-          <p>Fast, responsive, accessible front-ends built from scratch with modern JavaScript &amp; frameworks.</p>
-          <button class="svc__cta" data-open-order data-preset="dev">Order build →</button>
+          <h3 data-i18n="svc.dev.t">Web Development</h3>
+          <p data-i18n="svc.dev.d">Fast, responsive, accessible front-ends built from scratch with modern JavaScript &amp; frameworks.</p>
+          <button class="svc__cta" data-open-order data-preset="dev" data-i18n="svc.dev.cta">Order build →</button>
         </article>
         <article class="svc reveal">
           <div class="svc__icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.27 6.96 8.73 5.05 8.73-5.05"/><path d="M12 22.08V12"/></svg>
           </div>
-          <h3>Full Package</h3>
-          <p>End-to-end: strategy, design and development — one team, one timeline, one polished result.</p>
-          <button class="svc__cta" data-open-order data-preset="full">Order package →</button>
+          <h3 data-i18n="svc.full.t">Full Package</h3>
+          <p data-i18n="svc.full.d">End-to-end: strategy, design and development — one team, one timeline, one polished result.</p>
+          <button class="svc__cta" data-open-order data-preset="full" data-i18n="svc.full.cta">Order package →</button>
         </article>
       </div>
     </section>
@@ -118,13 +120,13 @@
     <section class="section" id="portfolio">
       <div class="section__head reveal">
         <span class="section__num">02</span>
-        <h2 class="section__title">Selected work</h2>
+        <h2 class="section__title" data-i18n="work.head">Selected work</h2>
       </div>
 
       <div class="filters reveal" id="filters">
-        <button class="filter is-active" data-filter="all">All</button>
-        <button class="filter" data-filter="dev">Web Dev</button>
-        <button class="filter" data-filter="design">UI/UX Design</button>
+        <button class="filter is-active" data-filter="all" data-i18n="work.all">All</button>
+        <button class="filter" data-filter="dev" data-i18n="work.dev">Web Dev</button>
+        <button class="filter" data-filter="design" data-i18n="work.design">UI/UX Design</button>
       </div>
 
       <div class="projects" id="projects">
@@ -135,7 +137,7 @@
           </div>
           <div class="card__body">
             <h3>Carigo App</h3>
-            <p>Mobile UI/UX for a premium car-rental service — flows, components and a polished visual system.</p>
+            <p data-i18n="work.carigo">Mobile UI/UX for a premium car-rental service — flows, components and a polished visual system.</p>
             <div class="card__tags"><span>Figma</span><span>Mobile</span><span>UX</span></div>
           </div>
         </article>
@@ -146,7 +148,7 @@
           </div>
           <div class="card__body">
             <h3>Movis — Streaming App</h3>
-            <p>Movie streaming experience with rich browsing, watchlists and a cinematic dark interface.</p>
+            <p data-i18n="work.movis">Movie streaming experience with rich browsing, watchlists and a cinematic dark interface.</p>
             <div class="card__tags"><span>JavaScript</span><span>UI</span><span>App</span></div>
           </div>
         </article>
@@ -157,7 +159,7 @@
           </div>
           <div class="card__body">
             <h3>SmartScan Portal</h3>
-            <p>Web portal design and front-end build for a medical document scanning product.</p>
+            <p data-i18n="work.smartscan">Web portal design and front-end build for a medical document scanning product.</p>
             <div class="card__tags"><span>Front-End</span><span>SCSS</span><span>Portal</span></div>
           </div>
         </article>
@@ -168,7 +170,7 @@
           </div>
           <div class="card__body">
             <h3>Nutrion Art</h3>
-            <p>Clean, friendly mobile app design for meal tracking and personalized nutrition plans.</p>
+            <p data-i18n="work.nutrion">Clean, friendly mobile app design for meal tracking and personalized nutrition plans.</p>
             <div class="card__tags"><span>Figma</span><span>Mobile</span><span>Design</span></div>
           </div>
         </article>
@@ -178,8 +180,8 @@
             <span class="card__cat">Web Dev</span>
           </div>
           <div class="card__body">
-            <h3>Portfolio Website</h3>
-            <p>Animated, responsive personal portfolio built from scratch to showcase creative work.</p>
+            <h3 data-i18n="work.portfolio.t">Portfolio Website</h3>
+            <p data-i18n="work.portfolio.d">Animated, responsive personal portfolio built from scratch to showcase creative work.</p>
             <div class="card__tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
           </div>
         </article>
@@ -190,7 +192,7 @@
           </div>
           <div class="card__body">
             <h3>DSG — Brand Identity</h3>
-            <p>Logo and brand-identity system for Deaf Smart Glasses — cards, marks and guidelines.</p>
+            <p data-i18n="work.dsg">Logo and brand-identity system for Deaf Smart Glasses — cards, marks and guidelines.</p>
             <div class="card__tags"><span>Illustrator</span><span>Branding</span><span>Logo</span></div>
           </div>
         </article>
@@ -200,8 +202,8 @@
             <span class="card__cat">UI/UX</span>
           </div>
           <div class="card__body">
-            <h3>Logo Collection</h3>
-            <p>A collection of logo and brand-mark work across illustration and visual design.</p>
+            <h3 data-i18n="work.logos.t">Logo Collection</h3>
+            <p data-i18n="work.logos.d">A collection of logo and brand-mark work across illustration and visual design.</p>
             <div class="card__tags"><span>Illustrator</span><span>Logos</span><span>Design</span></div>
           </div>
         </article>
@@ -212,16 +214,16 @@
     <section class="section" id="about">
       <div class="section__head reveal">
         <span class="section__num">03</span>
-        <h2 class="section__title">About the studio</h2>
+        <h2 class="section__title" data-i18n="about.head">About the studio</h2>
       </div>
       <div class="about">
         <div class="about__text reveal">
-          <p>
+          <p data-i18n="about.p1">
             I'm a multidisciplinary creator working at the intersection of <strong>design</strong> and
             <strong>code</strong>. Over the last five years I've designed and shipped websites, web apps
             and mobile interfaces — from the first sketch to production.
           </p>
-          <p>
+          <p data-i18n="about.p2">
             I pair a designer's eye for detail with a developer's discipline, turning complex problems
             into clean, intuitive interfaces. Based in Oran, Algeria, working with clients worldwide.
           </p>
@@ -233,13 +235,13 @@
         <div class="about__card reveal">
           <div class="about__avatar">KM</div>
           <h3>Khalil M'hamdi</h3>
-          <p class="about__role">Front-End Developer · UI/UX Designer</p>
+          <p class="about__role" data-i18n="about.role">Front-End Developer · UI/UX Designer</p>
           <ul class="about__meta">
-            <li><strong>Based in</strong> Oran, Algeria</li>
-            <li><strong>Focus</strong> Web &amp; Product Design</li>
-            <li><strong>Availability</strong> Open to work</li>
+            <li data-i18n="about.based"><strong>Based in</strong> Oran, Algeria</li>
+            <li data-i18n="about.focus"><strong>Focus</strong> Web &amp; Product Design</li>
+            <li data-i18n="about.avail"><strong>Availability</strong> Open to work</li>
           </ul>
-          <button class="btn btn--primary btn--block" data-open-order>Start a project</button>
+          <button class="btn btn--primary btn--block" data-open-order data-i18n="about.start">Start a project</button>
         </div>
       </div>
     </section>
@@ -249,23 +251,23 @@
   <footer class="footer">
     <div class="footer__brand">
       <a href="#hero" class="nav__logo">KM<span>.</span><small>studio</small></a>
-      <p>Design &amp; development studio — Oran, Algeria.</p>
+      <p data-i18n="footer.tag">Design &amp; development studio — Oran, Algeria.</p>
     </div>
     <div class="footer__col">
-      <h4>Navigate</h4>
-      <a href="#portfolio">Portfolio</a>
-      <a href="#services">Services</a>
-      <button class="linkish" data-open-order>Order Now</button>
-      <button class="linkish" data-open-account>My Account</button>
+      <h4 data-i18n="footer.navigate">Navigate</h4>
+      <a href="#portfolio" data-i18n="nav.portfolio">Portfolio</a>
+      <a href="#services" data-i18n="nav.services">Services</a>
+      <button class="linkish" data-open-order data-i18n="nav.order">Order Now</button>
+      <button class="linkish" data-open-account data-i18n="nav.account">My Account</button>
     </div>
     <div class="footer__col">
-      <h4>Connect</h4>
+      <h4 data-i18n="footer.connect">Connect</h4>
       <a href="https://www.linkedin.com/in/mhamdi-khalil-828352297" target="_blank" rel="noopener">LinkedIn</a>
       <a href="https://www.instagram.com/khalil.ux31" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.facebook.com/khalil.mhamdi.562114" target="_blank" rel="noopener">Facebook</a>
       <a href="mailto:khalilmhamdi4work@gmail.com">khalilmhamdi4work@gmail.com</a>
     </div>
-    <p class="footer__copy">© <span id="year"></span> Khalil M'hamdi. All rights reserved.</p>
+    <p class="footer__copy">© <span id="year"></span> Khalil M'hamdi. <span data-i18n="footer.rights">All rights reserved.</span></p>
   </footer>
 
   <!-- ===== Order Wizard Modal ===== -->
@@ -278,22 +280,22 @@
         <header class="wizard__head">
           <div class="wizard__titlerow">
             <div>
-              <span class="wizard__eyebrow">New project</span>
-              <h2 id="order-title">Place an order</h2>
+              <span class="wizard__eyebrow" data-i18n="wiz.eyebrow">New project</span>
+              <h2 id="order-title" data-i18n="wiz.title">Place an order</h2>
             </div>
             <span class="wizard__count" id="wiz-count">Step 1 of 3</span>
           </div>
           <ol class="steps" id="steps">
-            <li class="step is-active" data-step="1"><span>1</span>Service</li>
-            <li class="step" data-step="2"><span>2</span>Details</li>
-            <li class="step" data-step="3"><span>3</span>Confirm</li>
+            <li class="step is-active" data-step="1"><span>1</span><em data-i18n="wiz.s1">Service</em></li>
+            <li class="step" data-step="2"><span>2</span><em data-i18n="wiz.s2">Details</em></li>
+            <li class="step" data-step="3"><span>3</span><em data-i18n="wiz.s3">Confirm</em></li>
           </ol>
         </header>
 
         <form id="order-form" novalidate>
           <!-- Step 1: Service -->
           <section class="wstep is-active" data-pane="1">
-            <p class="wstep__hint">Choose what you need.</p>
+            <p class="wstep__hint" data-i18n="wiz.choose">Choose what you need.</p>
             <div class="svc-picker" id="svc-picker">
               <label class="svc-opt">
                 <input type="radio" name="service" value="UI/UX Design" required />
@@ -301,8 +303,8 @@
                   <span class="svc-opt__icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
                   </span>
-                  <h4>UI/UX Design</h4>
-                  <p>Wireframes, design systems &amp; high-fidelity UI.</p>
+                  <h4 data-i18n="opt.design.t">UI/UX Design</h4>
+                  <p data-i18n="opt.design.d">Wireframes, design systems &amp; high-fidelity UI.</p>
                   <span class="svc-opt__check">✓</span>
                 </div>
               </label>
@@ -312,8 +314,8 @@
                   <span class="svc-opt__icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                   </span>
-                  <h4>Web Development</h4>
-                  <p>Responsive, fast, accessible front-end builds.</p>
+                  <h4 data-i18n="opt.dev.t">Web Development</h4>
+                  <p data-i18n="opt.dev.d">Responsive, fast, accessible front-end builds.</p>
                   <span class="svc-opt__check">✓</span>
                 </div>
               </label>
@@ -323,8 +325,8 @@
                   <span class="svc-opt__icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.27 6.96 8.73 5.05 8.73-5.05"/><path d="M12 22.08V12"/></svg>
                   </span>
-                  <h4>Full Package</h4>
-                  <p>Design + development, end to end.</p>
+                  <h4 data-i18n="opt.full.t">Full Package</h4>
+                  <p data-i18n="opt.full.d">Design + development, end to end.</p>
                   <span class="svc-opt__check">✓</span>
                 </div>
               </label>
@@ -334,8 +336,8 @@
                   <span class="svc-opt__icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
                   </span>
-                  <h4>Customize</h4>
-                  <p>Something else? Describe your own custom request.</p>
+                  <h4 data-i18n="opt.custom.t">Customize</h4>
+                  <p data-i18n="opt.custom.d">Something else? Describe your own custom request.</p>
                   <span class="svc-opt__check">✓</span>
                 </div>
               </label>
@@ -351,10 +353,10 @@
                 <strong id="order-as-name">—</strong>
                 <span id="order-as-email"></span>
               </div>
-              <em>Ordering as</em>
+              <em data-i18n="wiz.orderingAs">Ordering as</em>
             </div>
             <div class="field">
-              <label for="o-phone">Phone number</label>
+              <label for="o-phone" data-i18n="wiz.phone">Phone number</label>
               <div class="phone-row">
                 <select id="o-cc" name="cc" class="phone-cc" aria-label="Country code"></select>
                 <input type="tel" id="o-phone" name="phone" placeholder="6 00 00 00 00" required />
@@ -362,38 +364,38 @@
               <p class="field-error" data-error="phone"></p>
             </div>
             <div class="field">
-              <label for="o-brief">Project brief</label>
-              <textarea id="o-brief" name="brief" rows="4" placeholder="Tell me about your project, goals and any links…" required></textarea>
+              <label for="o-brief" data-i18n="wiz.brief">Project brief</label>
+              <textarea id="o-brief" name="brief" rows="4" data-i18n-ph="wiz.briefPh" placeholder="Tell me about your project, goals and any links…" required></textarea>
               <p class="field-error" data-error="brief"></p>
             </div>
             <div class="field">
-              <label for="o-timeline">Desired timeline</label>
+              <label for="o-timeline" data-i18n="wiz.timeline">Desired timeline</label>
               <select id="o-timeline" name="timeline">
-                <option value="As soon as possible">As soon as possible</option>
-                <option value="1–2 weeks">1–2 weeks</option>
-                <option value="2–4 weeks" selected>2–4 weeks</option>
-                <option value="1–2 months">1–2 months</option>
-                <option value="Flexible / not sure">Flexible / not sure</option>
+                <option value="As soon as possible" data-i18n="wiz.tl.asap">As soon as possible</option>
+                <option value="1–2 weeks" data-i18n="wiz.tl.12w">1–2 weeks</option>
+                <option value="2–4 weeks" selected data-i18n="wiz.tl.24w">2–4 weeks</option>
+                <option value="1–2 months" data-i18n="wiz.tl.12m">1–2 months</option>
+                <option value="Flexible / not sure" data-i18n="wiz.tl.flex">Flexible / not sure</option>
               </select>
             </div>
           </section>
 
           <!-- Step 3: Confirm -->
           <section class="wstep" data-pane="3">
-            <p class="wstep__hint">Review your order before sending.</p>
+            <p class="wstep__hint" data-i18n="wiz.review">Review your order before sending.</p>
             <dl class="summary" id="summary"></dl>
             <label class="consent">
               <input type="checkbox" id="o-consent" name="consent" required />
-              <span>I agree to be contacted about this project at my account email.</span>
+              <span data-i18n="wiz.consent">I agree to be contacted about this project at my account email.</span>
             </label>
             <p class="field-error" data-error="consent"></p>
           </section>
 
           <footer class="wizard__foot">
-            <button type="button" class="btn btn--ghost" id="wiz-back" hidden>← Back</button>
-            <button type="button" class="btn btn--primary" id="wiz-next">Continue →</button>
+            <button type="button" class="btn btn--ghost" id="wiz-back" hidden data-i18n="wiz.back">← Back</button>
+            <button type="button" class="btn btn--primary" id="wiz-next" data-i18n="wiz.next">Continue →</button>
             <button type="submit" class="btn btn--primary" id="wiz-submit" hidden>
-              <span class="btn__label">Submit order</span>
+              <span class="btn__label" data-i18n="wiz.submit">Submit order</span>
               <span class="btn__spinner" hidden></span>
             </button>
           </footer>
@@ -404,10 +406,9 @@
       <div class="success" id="success" hidden>
         <canvas id="confetti"></canvas>
         <div class="success__check">✓</div>
-        <h2>Order received!</h2>
-        <p>Thanks <span id="success-name">there</span> — your brief is on its way.
-           I'll reply within 24 hours. Track its status anytime in <button class="linkish" data-open-account data-close-order>your account</button>.</p>
-        <button class="btn btn--primary" data-close-order>Done</button>
+        <h2 data-i18n="ok.title">Order received!</h2>
+        <p><span data-i18n="ok.thanks">Thanks</span> <span id="success-name">there</span> — <span data-i18n="ok.body">your brief is on its way. I'll reply within 24 hours. Track its status anytime in your account.</span></p>
+        <button class="btn btn--primary" data-close-order data-i18n="ok.done">Done</button>
       </div>
     </div>
   </div>
@@ -422,12 +423,12 @@
       <div class="auth" id="auth-view">
         <div class="auth__intro">
           <span class="auth__mark"></span>
-          <h2 id="account-title">Client area</h2>
-          <p>Create an account to place an order and track its status anytime.</p>
+          <h2 id="account-title" data-i18n="auth.title">Client area</h2>
+          <p data-i18n="auth.intro">Create an account to place an order and track its status anytime.</p>
         </div>
         <div class="auth__tabs">
-          <button type="button" class="auth__tab is-active" data-auth-tab="login">Log in</button>
-          <button type="button" class="auth__tab" data-auth-tab="signup">Create account</button>
+          <button type="button" class="auth__tab is-active" data-auth-tab="login" data-i18n="auth.login">Log in</button>
+          <button type="button" class="auth__tab" data-auth-tab="signup" data-i18n="auth.signup">Create account</button>
         </div>
 
         <div class="auth__social" id="auth-social">
@@ -438,87 +439,87 @@
               <path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/>
               <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/>
             </svg>
-            Continue with Google
+            <span data-i18n="auth.google">Continue with Google</span>
           </button>
-          <div class="auth__or"><span>or</span></div>
+          <div class="auth__or"><span data-i18n="auth.or">or</span></div>
         </div>
 
         <!-- Log in -->
         <form id="login-form" class="auth__form" novalidate>
           <div class="field">
-            <label for="li-email">Email</label>
+            <label for="li-email" data-i18n="auth.email">Email</label>
             <input type="email" id="li-email" name="email" placeholder="you@email.com" required />
             <p class="field-error" data-error="li-email"></p>
           </div>
           <div class="field field--pass">
-            <label for="li-pass">Password</label>
-            <input type="password" id="li-pass" name="password" placeholder="Your password" required />
+            <label for="li-pass" data-i18n="auth.password">Password</label>
+            <input type="password" id="li-pass" name="password" data-i18n-ph="auth.passwordPh" placeholder="Your password" required />
             <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
             <p class="field-error" data-error="li-pass"></p>
           </div>
-          <button type="submit" class="btn btn--primary btn--block">Log in</button>
-          <p class="auth__switch"><button type="button" class="linkish" data-auth-tab="forgot">Forgot password?</button></p>
-          <p class="auth__switch">New here? <button type="button" class="linkish" data-auth-tab="signup">Create an account</button></p>
+          <button type="submit" class="btn btn--primary btn--block" data-i18n="auth.login">Log in</button>
+          <p class="auth__switch"><button type="button" class="linkish" data-auth-tab="forgot" data-i18n="auth.forgot">Forgot password?</button></p>
+          <p class="auth__switch"><span data-i18n="auth.newHere">New here?</span> <button type="button" class="linkish" data-auth-tab="signup" data-i18n="auth.createOne">Create an account</button></p>
         </form>
 
         <!-- Sign up -->
         <form id="signup-form" class="auth__form" novalidate hidden>
           <div class="field">
-            <label for="su-name">Full name</label>
-            <input type="text" id="su-name" name="name" placeholder="Your full name" required />
+            <label for="su-name" data-i18n="auth.fullname">Full name</label>
+            <input type="text" id="su-name" name="name" data-i18n-ph="auth.fullnamePh" placeholder="Your full name" required />
             <p class="field-error" data-error="su-name"></p>
           </div>
           <div class="field">
-            <label for="su-email">Email</label>
+            <label for="su-email" data-i18n="auth.email">Email</label>
             <input type="email" id="su-email" name="email" placeholder="you@email.com" required />
             <p class="field-error" data-error="su-email"></p>
           </div>
           <div class="grid2">
             <div class="field field--pass">
-              <label for="su-pass">Password</label>
-              <input type="password" id="su-pass" name="password" placeholder="Min. 6 characters" required />
+              <label for="su-pass" data-i18n="auth.password">Password</label>
+              <input type="password" id="su-pass" name="password" data-i18n-ph="auth.min6" placeholder="Min. 6 characters" required />
               <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
               <p class="field-error" data-error="su-pass"></p>
             </div>
             <div class="field field--pass">
-              <label for="su-pass2">Confirm password</label>
-              <input type="password" id="su-pass2" name="password2" placeholder="Repeat password" required />
+              <label for="su-pass2" data-i18n="auth.confirmPass">Confirm password</label>
+              <input type="password" id="su-pass2" name="password2" data-i18n-ph="auth.repeat" placeholder="Repeat password" required />
               <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
               <p class="field-error" data-error="su-pass2"></p>
             </div>
           </div>
-          <button type="submit" class="btn btn--primary btn--block">Create account</button>
-          <p class="auth__switch">Already have an account? <button type="button" class="linkish" data-auth-tab="login">Log in</button></p>
+          <button type="submit" class="btn btn--primary btn--block" data-i18n="auth.signup">Create account</button>
+          <p class="auth__switch"><span data-i18n="auth.haveAccount">Already have an account?</span> <button type="button" class="linkish" data-auth-tab="login" data-i18n="auth.login">Log in</button></p>
         </form>
 
         <!-- Forgot password -->
         <form id="forgot-form" class="auth__form" novalidate hidden>
-          <p class="auth__note">Enter your email and we'll send you a link to reset your password.</p>
+          <p class="auth__note" data-i18n="auth.forgotNote">Enter your email and we'll send you a link to reset your password.</p>
           <div class="field">
-            <label for="fp-email">Email</label>
+            <label for="fp-email" data-i18n="auth.email">Email</label>
             <input type="email" id="fp-email" name="email" placeholder="you@email.com" required />
             <p class="field-error" data-error="fp-email"></p>
           </div>
-          <button type="submit" class="btn btn--primary btn--block">Send reset link</button>
-          <p class="auth__switch"><button type="button" class="linkish" data-auth-tab="login">← Back to log in</button></p>
+          <button type="submit" class="btn btn--primary btn--block" data-i18n="auth.sendReset">Send reset link</button>
+          <p class="auth__switch"><button type="button" class="linkish" data-auth-tab="login" data-i18n="auth.backLogin">← Back to log in</button></p>
         </form>
 
         <!-- Set a new password (after clicking the reset link) -->
         <form id="reset-form" class="auth__form" novalidate hidden>
-          <p class="auth__note">Choose a new password for your account.</p>
+          <p class="auth__note" data-i18n="auth.resetNote">Choose a new password for your account.</p>
           <div class="field field--pass">
-            <label for="rp-pass">New password</label>
-            <input type="password" id="rp-pass" name="password" placeholder="Min. 6 characters" required />
+            <label for="rp-pass" data-i18n="auth.newPass">New password</label>
+            <input type="password" id="rp-pass" name="password" data-i18n-ph="auth.min6" placeholder="Min. 6 characters" required />
             <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
             <p class="field-error" data-error="rp-pass"></p>
           </div>
           <div class="field field--pass">
-            <label for="rp-pass2">Confirm new password</label>
-            <input type="password" id="rp-pass2" name="password2" placeholder="Repeat password" required />
+            <label for="rp-pass2" data-i18n="auth.confirmNewPass">Confirm new password</label>
+            <input type="password" id="rp-pass2" name="password2" data-i18n-ph="auth.repeat" placeholder="Repeat password" required />
             <button type="button" class="pass-toggle" data-pass-toggle aria-label="Show password">👁</button>
             <p class="field-error" data-error="rp-pass2"></p>
           </div>
-          <button type="submit" class="btn btn--primary btn--block">Update password</button>
+          <button type="submit" class="btn btn--primary btn--block" data-i18n="auth.updatePass">Update password</button>
         </form>
       </div>
 
@@ -531,8 +532,8 @@
             <p class="dash__sub" id="dash-sub">Your orders &amp; project status</p>
           </div>
           <div class="dash__actions">
-            <button class="btn btn--primary dash__new" data-open-order data-close-account>+ New order</button>
-            <button class="btn btn--ghost" id="logout-btn">Log out</button>
+            <button class="btn btn--primary dash__new" data-open-order data-close-account data-i18n="dash.new">+ New order</button>
+            <button class="btn btn--ghost" id="logout-btn" data-i18n="dash.logout">Log out</button>
           </div>
         </header>
 
@@ -541,13 +542,13 @@
         <div class="dash__tablewrap">
           <table class="orders" id="orders-table">
             <thead>
-              <tr><th>Order</th><th>Service</th><th>Timeline</th><th>Date</th><th>Status</th></tr>
+              <tr><th data-i18n="tbl.order">Order</th><th data-i18n="tbl.service">Service</th><th data-i18n="tbl.timeline">Timeline</th><th data-i18n="tbl.date">Date</th><th data-i18n="tbl.status">Status</th></tr>
             </thead>
             <tbody id="orders-body"></tbody>
           </table>
           <div class="dash__empty" id="dash-empty" hidden>
-            <p>No orders yet.</p>
-            <button class="btn btn--primary" data-open-order data-close-account>Place your first order</button>
+            <p data-i18n="dash.none">No orders yet.</p>
+            <button class="btn btn--primary" data-open-order data-close-account data-i18n="dash.first">Place your first order</button>
           </div>
         </div>
       </div>
@@ -557,37 +558,37 @@
         <header class="dash__head">
           <div class="dash__avatar dash__avatar--admin">★</div>
           <div>
-            <h2>Admin dashboard</h2>
+            <h2 data-i18n="admin.title">Admin dashboard</h2>
             <p class="dash__sub" id="admin-sub">All clients &amp; orders</p>
           </div>
           <div class="dash__actions">
-            <button class="btn btn--ghost" id="admin-refresh">↻ Refresh</button>
-            <button class="btn btn--ghost" id="admin-logout">Log out</button>
+            <button class="btn btn--ghost" id="admin-refresh" data-i18n="admin.refresh">↻ Refresh</button>
+            <button class="btn btn--ghost" id="admin-logout" data-i18n="dash.logout">Log out</button>
           </div>
         </header>
 
         <div class="dash__stats" id="admin-stats"></div>
 
-        <h3 class="admin__h">All orders</h3>
+        <h3 class="admin__h" data-i18n="admin.allOrders">All orders</h3>
         <div class="dash__tablewrap">
           <table class="orders" id="admin-orders-table">
             <thead>
-              <tr><th>Client</th><th>Service</th><th>Timeline</th><th>Date</th><th>Status</th></tr>
+              <tr><th data-i18n="tbl.client">Client</th><th data-i18n="tbl.service">Service</th><th data-i18n="tbl.timeline">Timeline</th><th data-i18n="tbl.date">Date</th><th data-i18n="tbl.status">Status</th></tr>
             </thead>
             <tbody id="admin-orders-body"></tbody>
           </table>
-          <div class="dash__empty" id="admin-orders-empty" hidden><p>No orders yet.</p></div>
+          <div class="dash__empty" id="admin-orders-empty" hidden><p data-i18n="dash.none">No orders yet.</p></div>
         </div>
 
-        <h3 class="admin__h">All accounts</h3>
+        <h3 class="admin__h" data-i18n="admin.allAccounts">All accounts</h3>
         <div class="dash__tablewrap">
           <table class="orders" id="admin-users-table">
             <thead>
-              <tr><th>Name</th><th>Email</th><th>Joined</th></tr>
+              <tr><th data-i18n="tbl.name">Name</th><th data-i18n="tbl.email">Email</th><th data-i18n="tbl.joined">Joined</th></tr>
             </thead>
             <tbody id="admin-users-body"></tbody>
           </table>
-          <div class="dash__empty" id="admin-users-empty" hidden><p>No accounts yet.</p></div>
+          <div class="dash__empty" id="admin-users-empty" hidden><p data-i18n="admin.noAccounts">No accounts yet.</p></div>
         </div>
       </div>
     </div>
@@ -598,10 +599,10 @@
     <div class="modal__backdrop" data-close-confirmed></div>
     <div class="modal__panel confirmed">
       <div class="confirmed__check">✓</div>
-      <h2>Email confirmed!</h2>
-      <p>Welcome to Khalil Studio — your account is active and you're now signed in. You can place an order and track its status anytime.</p>
-      <button class="btn btn--primary" data-open-account data-close-confirmed>Go to my account</button>
-      <button class="btn btn--text" data-close-confirmed>Continue browsing</button>
+      <h2 data-i18n="cf.title">Email confirmed!</h2>
+      <p data-i18n="cf.body">Welcome to Khalil Studio — your account is active and you're now signed in. You can place an order and track its status anytime.</p>
+      <button class="btn btn--primary" data-open-account data-close-confirmed data-i18n="cf.go">Go to my account</button>
+      <button class="btn btn--text" data-close-confirmed data-i18n="cf.continue">Continue browsing</button>
     </div>
   </div>
 
@@ -609,6 +610,7 @@
   <div class="toast" id="toast" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="i18n.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

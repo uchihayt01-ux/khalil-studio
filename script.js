@@ -82,7 +82,7 @@ async function signup({ name, email, password }) {
 async function login({ email, password }) {
   if (!sb) throw new Error('Service unavailable. Please try again later.');
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) throw new Error('Wrong email or password.');
+  if (error) throw new Error(t('err.wrong'));
   state.user = sessionToUser(data.session);
   return state.user;
 }
@@ -331,7 +331,7 @@ function openOrder(preset) {
     renderAccount();
     setAuthTab('signup');
     openModal(accountModal);
-    toast('Create an account (or log in) to place an order.', 'warn');
+    toast(t('toast.needLogin'), 'warn');
     return;
   }
   resetWizard();
@@ -379,7 +379,7 @@ function showStep(n) {
   btnNext.hidden = n === TOTAL;
   btnSubmit.hidden = n !== TOTAL;
   const count = $('#wiz-count');
-  if (count) count.textContent = `Step ${n} of ${TOTAL}`;
+  if (count) count.textContent = t('wiz.stepOf', { n: n, t: TOTAL });
   if (n === TOTAL) buildSummary();
 }
 
@@ -398,14 +398,14 @@ function setError(name, text) {
 
 function validateStep(n) {
   if (n === 1) {
-    if (!form.service.value) { setError('service', 'Please choose a service to continue.'); return false; }
+    if (!form.service.value) { setError('service', t('err.service')); return false; }
     clearError('service');
     return true;
   }
   if (n === 2) {
     let ok = true;
-    if (form.phone.value.replace(/\D/g, '').length < 6) { setError('phone', 'Enter a valid phone number.'); ok = false; } else clearError('phone');
-    if (form.brief.value.trim().length < 10) { setError('brief', 'Tell me a bit more (10+ characters).'); ok = false; } else clearError('brief');
+    if (form.phone.value.replace(/\D/g, '').length < 6) { setError('phone', t('err.phone')); ok = false; } else clearError('phone');
+    if (form.brief.value.trim().length < 10) { setError('brief', t('err.brief')); ok = false; } else clearError('brief');
     return ok;
   }
   return true;
@@ -429,13 +429,14 @@ function fullPhone() {
 function buildSummary() {
   const dl = $('#summary');
   const user = currentUser() || { name: '—', email: '—' };
+  const tlOpt = form.timeline.selectedOptions[0];
   const rows = [
-    ['Service', form.service.value || '—'],
-    ['Name', user.name],
-    ['Email', user.email],
-    ['Phone', fullPhone() || '—'],
-    ['Timeline', form.timeline.value || '—'],
-    ['Brief', form.brief.value.trim() || '—'],
+    [t('sum.service'), serviceLabel(form.service.value) || '—'],
+    [t('sum.name'), user.name],
+    [t('sum.email'), user.email],
+    [t('sum.phone'), fullPhone() || '—'],
+    [t('sum.timeline'), tlOpt ? tlOpt.textContent : (form.timeline.value || '—')],
+    [t('sum.brief'), form.brief.value.trim() || '—'],
   ];
   dl.innerHTML = rows
     .map(([k, v]) => `<div><dt>${k}</dt><dd>${escapeHtml(v)}</dd></div>`)
@@ -466,9 +467,12 @@ const STATUSES = [
 ];
 function statusBadge(key) {
   const s = STATUSES.find((x) => x.key === key) || STATUSES[0];
-  return `<span class="badge ${s.cls}">${s.label}</span>`;
+  return `<span class="badge ${s.cls}">${t('st.' + s.key)}</span>`;
 }
 function shortId(id) { return (id || '').replace(/-/g, '').slice(0, 6).toUpperCase(); }
+// Translate a stored (English) service value for display.
+const SERVICE_KEY = { 'UI/UX Design': 'opt.design.t', 'Web Development': 'opt.dev.t', 'Full Package': 'opt.full.t', 'Customize': 'opt.custom.t' };
+function serviceLabel(v) { return SERVICE_KEY[v] ? t(SERVICE_KEY[v]) : (v || '—'); }
 
 /* --- Supabase data helpers --- */
 async function addOrderDB(order) {
@@ -528,24 +532,24 @@ async function renderDashboard() {
   const body = $('#orders-body'), empty = $('#dash-empty'), table = $('#orders-table');
 
   $('#dash-avatar').textContent = initials(u.name);
-  $('#dash-name').textContent = `Hi, ${u.name.split(' ')[0]}`;
+  $('#dash-name').textContent = t('dash.hi', { name: u.name.split(' ')[0] });
 
   const active = list.filter((o) => o.status !== 'done').length;
   const done = list.filter((o) => o.status === 'done').length;
   $('#dash-stats').innerHTML = `
-    <div class="dash__stat"><b>${list.length}</b><span>Total orders</span></div>
-    <div class="dash__stat"><b>${active}</b><span>Active</span></div>
-    <div class="dash__stat"><b>${done}</b><span>Completed</span></div>`;
+    <div class="dash__stat"><b>${list.length}</b><span>${t('dash.total')}</span></div>
+    <div class="dash__stat"><b>${active}</b><span>${t('dash.active')}</span></div>
+    <div class="dash__stat"><b>${done}</b><span>${t('dash.completed')}</span></div>`;
   $('#dash-sub').textContent = list.length
-    ? `${u.email} · ${active} active · ${done} completed`
-    : `${u.email} · no orders yet`;
+    ? `${u.email} · ${active} ${t('dash.active')} · ${done} ${t('dash.completed')}`
+    : `${u.email} · ${t('dash.noneYet')}`;
 
   if (!list.length) { table.hidden = true; empty.hidden = false; body.innerHTML = ''; return; }
   table.hidden = false; empty.hidden = true;
   body.innerHTML = list.map((o) => `
       <tr>
         <td><span class="o-id">#${shortId(o.id)}</span><span class="o-brief">${escapeHtml(o.brief || '')}</span></td>
-        <td>${escapeHtml(o.service || '')}</td>
+        <td>${escapeHtml(serviceLabel(o.service))}</td>
         <td>${escapeHtml(o.timeline || '—')}</td>
         <td>${fmtDate(o.created_at)}</td>
         <td>${statusBadge(o.status)}</td>
@@ -558,23 +562,23 @@ async function renderAdmin() {
   const active = orders.filter((o) => o.status !== 'done').length;
   const done = orders.filter((o) => o.status === 'done').length;
   $('#admin-stats').innerHTML = `
-    <div class="dash__stat"><b>${profiles.length}</b><span>Accounts</span></div>
-    <div class="dash__stat"><b>${orders.length}</b><span>Orders</span></div>
-    <div class="dash__stat"><b>${active}</b><span>Active</span></div>
-    <div class="dash__stat"><b>${done}</b><span>Completed</span></div>`;
-  $('#admin-sub').textContent = `${profiles.length} accounts · ${orders.length} orders`;
+    <div class="dash__stat"><b>${profiles.length}</b><span>${t('admin.accounts')}</span></div>
+    <div class="dash__stat"><b>${orders.length}</b><span>${t('admin.orders')}</span></div>
+    <div class="dash__stat"><b>${active}</b><span>${t('dash.active')}</span></div>
+    <div class="dash__stat"><b>${done}</b><span>${t('dash.completed')}</span></div>`;
+  $('#admin-sub').textContent = `${profiles.length} ${t('admin.accounts')} · ${orders.length} ${t('admin.orders')}`;
 
   const oBody = $('#admin-orders-body');
   $('#admin-orders-empty').hidden = orders.length > 0;
   oBody.innerHTML = orders.map((o) => `
       <tr>
         <td><span class="o-id">${escapeHtml(o.name || '—')}</span><span class="o-brief">${escapeHtml(o.email || '')}</span><span class="o-brief">${escapeHtml(o.phone || '')}</span></td>
-        <td>${escapeHtml(o.service || '')}<span class="o-brief">${escapeHtml(o.brief || '')}</span></td>
+        <td>${escapeHtml(serviceLabel(o.service))}<span class="o-brief">${escapeHtml(o.brief || '')}</span></td>
         <td>${escapeHtml(o.timeline || '—')}</td>
         <td>${fmtDate(o.created_at)}</td>
         <td>
           <select class="status-select" data-id="${o.id}">
-            ${STATUSES.map((s) => `<option value="${s.key}"${s.key === o.status ? ' selected' : ''}>${s.label}</option>`).join('')}
+            ${STATUSES.map((s) => `<option value="${s.key}"${s.key === o.status ? ' selected' : ''}>${t('st.' + s.key)}</option>`).join('')}
           </select>
         </td>
       </tr>`).join('');
@@ -594,7 +598,7 @@ document.addEventListener('change', async (e) => {
   const sel = e.target.closest('.status-select');
   if (!sel || !sb) return;
   const { error } = await sb.from('orders').update({ status: sel.value }).eq('id', sel.dataset.id);
-  toast(error ? 'Could not update status.' : 'Status updated ✓', error ? 'warn' : '');
+  toast(error ? t('toast.statusFail') : t('toast.statusUpdated'), error ? 'warn' : '');
 });
 
 /* --- auth UI wiring --- */
@@ -633,7 +637,7 @@ $('#login-form').addEventListener('submit', async (e) => {
     f.reset();
     await renderAccount();
     updateAvatar();
-    toast(isAdmin() ? 'Welcome, admin ★' : 'Welcome back ✓');
+    toast(isAdmin() ? t('toast.welcomeAdmin') : t('toast.welcome'));
     if (!isAdmin() && state.user) {
       sendEmail(ejs.templates.login, {
         to_email: state.user.email, to_name: state.user.name,
@@ -653,21 +657,21 @@ $('#signup-form').addEventListener('submit', async (e) => {
   const name = f.name.value.trim(), email = f.email.value.trim();
   const pass = f.password.value, pass2 = f.password2.value;
   let ok = true;
-  if (name.length < 2) { authError('su-name', 'Please enter your name.'); ok = false; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authError('su-email', 'Enter a valid email.'); ok = false; }
-  if (pass.length < 6) { authError('su-pass', 'At least 6 characters.'); ok = false; }
-  if (pass !== pass2) { authError('su-pass2', 'Passwords don’t match.'); ok = false; }
+  if (name.length < 2) { authError('su-name', t('err.name')); ok = false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authError('su-email', t('err.emailValid')); ok = false; }
+  if (pass.length < 6) { authError('su-pass', t('err.min6')); ok = false; }
+  if (pass !== pass2) { authError('su-pass2', t('err.match')); ok = false; }
   if (!ok) return;
   try {
     await signup({ name, email, password: pass });
     f.reset();
     await renderAccount();
     updateAvatar();
-    toast('Account created ✓ You can place an order now.');
+    toast(t('toast.created'));
   } catch (err) {
     if (err.message === 'confirm') {
       setAuthTab('login');
-      toast('Account created — check your email to confirm, then log in.', 'warn');
+      toast(t('toast.confirm'), 'warn');
     } else {
       authError('su-email', err.message);
     }
@@ -679,13 +683,13 @@ $('#forgot-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   authError('fp-email');
   const email = e.target.email.value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authError('fp-email', 'Enter a valid email.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authError('fp-email', t('err.emailValid')); return; }
   if (!sb) return;
   const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin });
   if (error) { authError('fp-email', error.message); return; }
   e.target.reset();
   setAuthTab('login');
-  toast('Reset link sent ✓ Check your email (and spam).');
+  toast(t('toast.resetSent'));
 });
 
 // Set a new password (after returning from the reset link).
@@ -693,7 +697,7 @@ $('#reset-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   authError('rp-pass'); authError('rp-pass2');
   const p1 = e.target.password.value, p2 = e.target.password2.value;
-  if (p1.length < 6) { authError('rp-pass', 'At least 6 characters.'); return; }
+  if (p1.length < 6) { authError('rp-pass', t('err.min6')); return; }
   if (p1 !== p2) { authError('rp-pass2', 'Passwords don’t match.'); return; }
   if (!sb) return;
   const { error } = await sb.auth.updateUser({ password: p1 });
@@ -702,11 +706,11 @@ $('#reset-form').addEventListener('submit', async (e) => {
   history.replaceState(null, '', location.pathname + location.search);
   $('.auth__tabs').hidden = false;
   await renderAccount();
-  toast('Password updated ✓ You are signed in.');
+  toast(t('toast.passUpdated'));
 });
 
 function doLogout() {
-  logout().then(() => { updateAvatar(); renderAccount(); toast('Logged out.'); });
+  logout().then(() => { updateAvatar(); renderAccount(); toast(t('toast.loggedOut')); });
 }
 $('#logout-btn').addEventListener('click', doLogout);
 $('#admin-logout').addEventListener('click', doLogout);
@@ -750,6 +754,12 @@ function openResetForm() {
   }
 })();
 
+// Re-render dynamic (JS-built) views when the language is switched.
+document.addEventListener('km:lang', () => {
+  if (accountModal.classList.contains('is-open')) renderAccount();
+  if (orderModal.classList.contains('is-open')) showStep(current);
+});
+
 /* ---------- 9) EMAIL SUBMIT --------------------------------------------- */
 const ejs = CONFIG.emailjs;
 const emailjsReady = !!(window.emailjs && ejs.publicKey && ejs.serviceId);
@@ -771,10 +781,10 @@ function showSuccess(name) {
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  if (!form.consent.checked) { setError('consent', 'Please confirm to continue.'); return; }
+  if (!form.consent.checked) { setError('consent', t('err.consent')); return; }
   clearError('consent');
   const u = currentUser();
-  if (!u) { toast('Please log in to place an order.', 'warn'); return; }
+  if (!u) { toast(t('toast.needLogin'), 'warn'); return; }
 
   const order = {
     user_id: u.id, name: u.name, email: u.email,
@@ -784,8 +794,8 @@ form.addEventListener('submit', async (e) => {
   };
 
   const label = $('.btn__label', btnSubmit), spinner = $('.btn__spinner', btnSubmit);
-  btnSubmit.disabled = true; if (label) label.textContent = 'Sending…'; if (spinner) spinner.hidden = false;
-  const restore = () => { btnSubmit.disabled = false; if (label) label.textContent = 'Submit order'; if (spinner) spinner.hidden = true; };
+  btnSubmit.disabled = true; if (label) label.textContent = t('wiz.sending'); if (spinner) spinner.hidden = false;
+  const restore = () => { btnSubmit.disabled = false; if (label) label.textContent = t('wiz.submit'); if (spinner) spinner.hidden = true; };
 
   // 1) Save the order to Supabase (visible to the client and the admin).
   let saved;
@@ -793,7 +803,7 @@ form.addEventListener('submit', async (e) => {
     saved = await addOrderDB(order);
   } catch (err) {
     restore();
-    toast('Could not submit order: ' + err.message, 'warn');
+    toast(t('toast.orderFail') + err.message, 'warn');
     return;
   }
 
