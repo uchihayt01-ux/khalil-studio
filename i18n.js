@@ -92,7 +92,7 @@
       'nav.order': 'اطلب الآن', 'nav.account': 'حسابي',
       'hero.eyebrow': 'صَمِّم وابنِ مشروعك القادم',
       'hero.title': 'طريقة جديدة للتفكير والإبداع<br /><span class="grad">بالتصميم والبرمجة</span>',
-      'hero.lead': 'استوديو تطوير واجهات وتصميم UI/UX بقيادة <strong>خليل مهمدي</strong>. تصفّح الأعمال، أو ابدأ طلبك في أقل من دقيقتين.',
+      'hero.lead': 'استوديو تطوير واجهات وتصميم UI/UX منجز بطرف <strong>امحمدي خليل</strong>. تصفّح الأعمال، أو ابدأ طلبك في أقل من دقيقتين.',
       'hero.order': 'اطلب الآن', 'hero.view': 'عرض الأعمال',
       'hero.stat1': 'سنوات خبرة', 'hero.stat2': 'مشروع منجز', 'hero.stat3': 'متوسط التقييم',
       'svc.head': 'ماذا أقدّم',
@@ -179,7 +179,7 @@
       const v = dict[el.getAttribute('data-i18n-ph')];
       if (v != null) el.setAttribute('placeholder', v);
     });
-    document.querySelectorAll('[data-lang-label]').forEach((el) => { el.textContent = lang === 'ar' ? 'EN' : 'ع'; });
+    document.querySelectorAll('[data-lang-label]').forEach((el) => { el.textContent = lang === 'ar' ? 'EN' : 'AR'; });
     localStorage.setItem('km_lang', lang);
     document.dispatchEvent(new CustomEvent('km:lang', { detail: lang }));
   }
