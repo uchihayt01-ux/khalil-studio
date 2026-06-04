@@ -240,8 +240,10 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   canvas.style.display = 'block';
 
   // Animate at ~30fps and ONLY while the hero is visible and the tab is active.
+  // Animate at ~30fps continuously while the tab is visible (pausing only when
+  // the browser tab is hidden — invisible to the user, saves battery/CPU).
   const FRAME = 1000 / 30;
-  let start = null, last = 0, raf = 0, running = false, heroVisible = true;
+  let start = null, last = 0, raf = 0, running = false;
   function frame(ts) {
     if (!running) return;
     if (start === null) start = ts;
@@ -257,14 +259,8 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   }
   function startLoop() { if (running) return; running = true; raf = requestAnimationFrame(frame); }
   function stopLoop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
-  function sync() { (heroVisible && !document.hidden) ? startLoop() : stopLoop(); }
-
-  const hero = document.querySelector('#hero');
-  if (hero && 'IntersectionObserver' in window) {
-    new IntersectionObserver((ents) => { heroVisible = ents[0].isIntersecting; sync(); }, { threshold: 0.01 }).observe(hero);
-  }
-  document.addEventListener('visibilitychange', sync);
-  sync();
+  document.addEventListener('visibilitychange', () => { document.hidden ? stopLoop() : startLoop(); });
+  startLoop();
 })();
 
 /* ---------- 6) PORTFOLIO FILTER ----------------------------------------- */
