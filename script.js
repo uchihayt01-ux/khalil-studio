@@ -17,6 +17,7 @@ const CONFIG = {
     templates: {
       order: '',       // template id for the "order received" email
       login: '',       // template id for the "new sign-in" email
+      status: '',      // template id for the "order status updated" email
     },
   },
 };
@@ -577,7 +578,7 @@ async function renderAdmin() {
         <td>${escapeHtml(o.timeline || '—')}</td>
         <td>${fmtDate(o.created_at)}</td>
         <td>
-          <select class="status-select" data-id="${o.id}">
+          <select class="status-select" data-id="${o.id}" data-email="${escapeHtml(o.email || '')}" data-name="${escapeHtml(o.name || '')}" data-service="${escapeHtml(o.service || '')}" data-oid="${shortId(o.id)}">
             ${STATUSES.map((s) => `<option value="${s.key}"${s.key === o.status ? ' selected' : ''}>${t('st.' + s.key)}</option>`).join('')}
           </select>
         </td>
@@ -598,7 +599,17 @@ document.addEventListener('change', async (e) => {
   const sel = e.target.closest('.status-select');
   if (!sel || !sb) return;
   const { error } = await sb.from('orders').update({ status: sel.value }).eq('id', sel.dataset.id);
-  toast(error ? t('toast.statusFail') : t('toast.statusUpdated'), error ? 'warn' : '');
+  if (error) { toast(t('toast.statusFail'), 'warn'); return; }
+  toast(t('toast.statusUpdated'));
+  // Notify the client by email about the new status (EmailJS, if configured).
+  const st = STATUSES.find((s) => s.key === sel.value) || STATUSES[0];
+  if (sel.dataset.email) {
+    sendEmail(ejs.templates.status, {
+      to_email: sel.dataset.email, to_name: sel.dataset.name, name: sel.dataset.name,
+      order_id: sel.dataset.oid, service: sel.dataset.service,
+      status: st.label, date: new Date().toLocaleString(), admin_email: CONFIG.adminEmail,
+    });
+  }
 });
 
 /* --- auth UI wiring --- */

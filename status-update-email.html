@@ -1,0 +1,32 @@
+<!--
+  Khalil Studio — ORDER STATUS UPDATE email (for EmailJS)
+  Paste into: EmailJS → Email Templates → (your "status" template) → Content (Code/HTML).
+  In the template settings set:  To Email = {{to_email}}
+  Variables used: {{name}} {{order_id}} {{service}} {{status}} {{date}} {{admin_email}}
+-->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0;padding:0;background:#0b0617;">
+  <tr><td align="center" style="padding:32px 16px;">
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:500px;background:#160c2e;border:1px solid #2a1a52;border-radius:18px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
+      <tr><td style="padding:32px 36px 6px 36px;">
+        <table cellpadding="0" cellspacing="0" role="presentation"><tr>
+          <td style="width:34px;height:34px;background:#8b5cf6;border-radius:50%;"></td>
+          <td style="padding-left:12px;color:#f2eeff;font-size:18px;font-weight:bold;">Khalil&nbsp;<span style="color:#9aa0c4;font-weight:normal;font-size:12px;letter-spacing:2px;">STUDIO</span></td>
+        </tr></table>
+      </td></tr>
+      <tr><td style="padding:16px 36px 4px 36px;">
+        <h1 style="margin:0 0 10px 0;color:#f2eeff;font-size:22px;line-height:1.3;">Your order has an update</h1>
+        <p style="margin:0 0 18px 0;color:#b8b0d4;font-size:15px;line-height:1.6;">
+          Hi {{name}}, the status of your order <strong style="color:#f2eeff;">#{{order_id}}</strong> ({{service}}) has changed to:
+        </p>
+        <div style="display:inline-block;background:#1f1442;color:#b794ff;font-size:15px;font-weight:bold;letter-spacing:.3px;padding:10px 20px;border-radius:24px;border:1px solid #3a2a6a;">{{status}}</div>
+      </td></tr>
+      <tr><td style="padding:22px 36px 8px 36px;">
+        <p style="margin:0;color:#8d84ad;font-size:13px;line-height:1.6;">Updated on {{date}}. You can view full details anytime from your account on the website.</p>
+      </td></tr>
+      <tr><td style="padding:22px 36px 30px 36px;border-top:1px solid #2a1a52;">
+        <p style="margin:0;color:#6b6486;font-size:12px;line-height:1.6;">Questions? Reply to this email or reach me at {{admin_email}}.</p>
+      </td></tr>
+    </table>
+    <p style="margin:18px 0 0 0;color:#5a5476;font-size:11px;font-family:Arial,Helvetica,sans-serif;">© Khalil M'hamdi · Khalil Studio</p>
+  </td></tr>
+</table>
