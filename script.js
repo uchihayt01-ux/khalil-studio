@@ -134,8 +134,14 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
    ----------------------------------------------------------------------- */
 (function silkGL() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+  // Skip the heavy shader on phones / touch / low-power devices and reduced-motion:
+  // the lightweight CSS gradient is used instead (fast + no pixelation).
+  const weak = reduce || coarse || window.innerWidth <= 820 ||
+    (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) ||
+    (navigator.deviceMemory && navigator.deviceMemory <= 4);
   const canvas = $('#bg-canvas');
-  if (!canvas) return;
+  if (!canvas || weak) return; // keep the CSS-orb fallback
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' })
           || canvas.getContext('experimental-webgl');
   if (!gl) return; // keep the CSS-orb fallback
@@ -146,7 +152,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
     'uniform vec2 u_res; uniform float u_time; uniform vec2 u_mouse;',
     'float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}',
     'float noise(vec2 p){vec2 i=floor(p),f=fract(p);float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.));vec2 u=f*f*(3.-2.*f);return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);}',
-    'float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<5;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s;}',
+    'float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<3;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s;}',
     'void main(){',
     '  vec2 uv=gl_FragCoord.xy/u_res.xy;',
     '  float asp=u_res.x/u_res.y;',
@@ -205,9 +211,9 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
 
   // Render at the device's real pixel density (so it's crisp on big / high-DPI
   // screens), but cap the total pixel count so weak GPUs stay smooth.
-  const MAX_PX = 3000000; // ~1920×1560; above this we scale down gracefully
+  const MAX_PX = 1800000; // cap GPU work; the silk is soft so it still looks crisp
   function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     let w = window.innerWidth * dpr, h = window.innerHeight * dpr;
     const px = w * h;
     if (px > MAX_PX) { const s = Math.sqrt(MAX_PX / px); w *= s; h *= s; }
@@ -233,24 +239,32 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   // WebGL on the bg canvas succeeded — reveal it (covers the CSS-orb fallback).
   canvas.style.display = 'block';
 
-  let start = null;
+  // Animate at ~30fps and ONLY while the hero is visible and the tab is active.
+  const FRAME = 1000 / 30;
+  let start = null, last = 0, raf = 0, running = false, heroVisible = true;
   function frame(ts) {
+    if (!running) return;
     if (start === null) start = ts;
-    mx += (tmx - mx) * 0.06;
-    my += (tmy - my) * 0.06;
-    gl.uniform2f(uMouse, mx, my);
-    gl.uniform1f(uTime, (ts - start) / 1000);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    requestAnimationFrame(frame);
+    if (ts - last >= FRAME) {
+      last = ts;
+      mx += (tmx - mx) * 0.1;
+      my += (tmy - my) * 0.1;
+      gl.uniform2f(uMouse, mx, my);
+      gl.uniform1f(uTime, (ts - start) / 1000);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    raf = requestAnimationFrame(frame);
   }
-  if (reduce) {
-    // One static frame for reduced-motion users.
-    gl.uniform2f(uMouse, mx, my);
-    gl.uniform1f(uTime, 0);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  } else {
-    requestAnimationFrame(frame);
+  function startLoop() { if (running) return; running = true; raf = requestAnimationFrame(frame); }
+  function stopLoop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
+  function sync() { (heroVisible && !document.hidden) ? startLoop() : stopLoop(); }
+
+  const hero = document.querySelector('#hero');
+  if (hero && 'IntersectionObserver' in window) {
+    new IntersectionObserver((ents) => { heroVisible = ents[0].isIntersecting; sync(); }, { threshold: 0.01 }).observe(hero);
   }
+  document.addEventListener('visibilitychange', sync);
+  sync();
 })();
 
 /* ---------- 6) PORTFOLIO FILTER ----------------------------------------- */
