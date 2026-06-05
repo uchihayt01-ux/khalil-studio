@@ -133,18 +133,15 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
    the shader is unavailable.
    ----------------------------------------------------------------------- */
 (function silkGL() {
+  // Reduced-motion users get the static CSS gradient; everyone else (incl. phones)
+  // gets the flowing silk — kept cheap via low resolution + 30fps + 3-octave noise.
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const coarse = window.matchMedia('(pointer: coarse)').matches;
-  // Skip the heavy shader on phones / touch / low-power devices and reduced-motion:
-  // the lightweight CSS gradient is used instead (fast + no pixelation).
-  const weak = reduce || coarse || window.innerWidth <= 820 ||
-    (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) ||
-    (navigator.deviceMemory && navigator.deviceMemory <= 4);
   const canvas = $('#bg-canvas');
-  if (!canvas || weak) return; // keep the CSS-orb fallback
+  if (!canvas || reduce) return; // CSS gradient fallback
+  const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 820;
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' })
           || canvas.getContext('experimental-webgl');
-  if (!gl) return; // keep the CSS-orb fallback
+  if (!gl) return; // keep the CSS gradient fallback
 
   const VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
   const FRAG = [
@@ -211,9 +208,9 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
 
   // Render at the device's real pixel density (so it's crisp on big / high-DPI
   // screens), but cap the total pixel count so weak GPUs stay smooth.
-  const MAX_PX = 1800000; // cap GPU work; the silk is soft so it still looks crisp
+  const MAX_PX = isMobile ? 900000 : 1800000; // cap GPU work (cheaper on phones)
   function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.5);
     let w = window.innerWidth * dpr, h = window.innerHeight * dpr;
     const px = w * h;
     if (px > MAX_PX) { const s = Math.sqrt(MAX_PX / px); w *= s; h *= s; }
