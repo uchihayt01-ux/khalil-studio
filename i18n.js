@@ -189,6 +189,14 @@
     document.querySelectorAll('[data-lang-toggle]').forEach((b) =>
       b.addEventListener('click', () => apply(window.KM_LANG === 'ar' ? 'en' : 'ar'))
     );
+    // Light / dark theme toggle (theme is pre-applied in <head> to avoid a flash).
+    document.querySelectorAll('[data-theme-toggle]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem('km_theme', next);
+      })
+    );
     apply(lang);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

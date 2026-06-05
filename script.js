@@ -256,8 +256,14 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   }
   function startLoop() { if (running) return; running = true; raf = requestAnimationFrame(frame); }
   function stopLoop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
-  document.addEventListener('visibilitychange', () => { document.hidden ? stopLoop() : startLoop(); });
-  startLoop();
+  function syncRun() {
+    const light = document.documentElement.dataset.theme === 'light';
+    (!document.hidden && !light) ? startLoop() : stopLoop();
+  }
+  document.addEventListener('visibilitychange', syncRun);
+  // Re-check when the theme is toggled (silk only runs in dark mode).
+  new MutationObserver(syncRun).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  syncRun();
 })();
 
 /* ---------- 6) PORTFOLIO FILTER ----------------------------------------- */
