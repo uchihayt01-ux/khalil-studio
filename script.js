@@ -146,7 +146,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   const VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
   const FRAG = [
     'precision highp float;',
-    'uniform vec2 u_res; uniform float u_time; uniform vec2 u_mouse;',
+    'uniform vec2 u_res; uniform float u_time; uniform vec2 u_mouse; uniform float u_light;',
     'float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}',
     'float noise(vec2 p){vec2 i=floor(p),f=fract(p);float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.));vec2 u=f*f*(3.-2.*f);return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);}',
     'float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<3;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s;}',
@@ -164,19 +164,32 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
     '  float bands=sin((r.x*2.6+f*4.2+t*2.0)*3.14159);',
     '  float silk=pow(abs(bands),2.2);',
     '  float sheen=pow(max(0.0,bands),18.0);',           // tight glossy ribbon highlight
-    '  vec3 base=vec3(0.012,0.008,0.035);',
-    '  vec3 mid=mix(vec3(0.11,0.045,0.24),vec3(0.05,0.07,0.30),r.y);',
-    '  vec3 hi=vec3(0.42,0.50,0.95);',
-    '  vec3 col=base;',
-    '  col=mix(col,mid,smoothstep(0.18,0.95,f));',
-    '  col=mix(col,hi,silk*0.30);',
-    '  col+=sheen*vec3(0.55,0.62,1.0)*0.55;',
-    '  col+=vec3(0.18,0.05,0.12)*pow(silk,3.0)*0.35;',   // subtle warm chroma on edges
-    '  col+=vec3(0.5,0.4,0.95)*smoothstep(0.5,0.0,md)*0.13;', // cursor glow
-    '  float sideW=smoothstep(0.10,0.5,abs(uv.x-0.5));', // darker center (behind text), brighter sides
-    '  col*=mix(0.42,1.0,sideW);',
-    '  float vig=smoothstep(1.35,0.35,length(uv-0.5));',
-    '  col*=mix(0.65,1.0,vig);',
+    '  float sideW=smoothstep(0.10,0.5,abs(uv.x-0.5));',
+    '  vec3 col;',
+    '  if(u_light>0.5){',                                  // LIGHT theme: pale flowing silk
+    '    vec3 base=vec3(0.95,0.92,1.0);',
+    '    vec3 mid=mix(vec3(0.86,0.80,0.98),vec3(0.80,0.74,0.97),r.y);',
+    '    vec3 hi=vec3(0.55,0.42,0.92);',
+    '    col=base;',
+    '    col=mix(col,mid,smoothstep(0.15,0.95,f));',
+    '    col=mix(col,hi,silk*0.30);',
+    '    col+=sheen*vec3(0.45,0.38,0.7)*0.18;',
+    '    col+=vec3(0.45,0.32,0.9)*smoothstep(0.5,0.0,md)*0.10;', // cursor glow
+    '    col=mix(col,vec3(0.97,0.95,1.0),(1.0-sideW)*0.45);',     // keep centre pale for text
+    '  } else {',                                          // DARK theme
+    '    vec3 base=vec3(0.012,0.008,0.035);',
+    '    vec3 mid=mix(vec3(0.11,0.045,0.24),vec3(0.05,0.07,0.30),r.y);',
+    '    vec3 hi=vec3(0.42,0.50,0.95);',
+    '    col=base;',
+    '    col=mix(col,mid,smoothstep(0.18,0.95,f));',
+    '    col=mix(col,hi,silk*0.30);',
+    '    col+=sheen*vec3(0.55,0.62,1.0)*0.55;',
+    '    col+=vec3(0.18,0.05,0.12)*pow(silk,3.0)*0.35;',
+    '    col+=vec3(0.5,0.4,0.95)*smoothstep(0.5,0.0,md)*0.13;',
+    '    col*=mix(0.42,1.0,sideW);',
+    '    float vig=smoothstep(1.35,0.35,length(uv-0.5));',
+    '    col*=mix(0.65,1.0,vig);',
+    '  }',
     '  col+=(fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)-0.5)/255.0;', // dither kills banding
     '  gl_FragColor=vec4(col,1.0);',
     '}'
@@ -205,6 +218,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   const uRes = gl.getUniformLocation(prog, 'u_res');
   const uTime = gl.getUniformLocation(prog, 'u_time');
   const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+  const uLight = gl.getUniformLocation(prog, 'u_light');
 
   // Render at the device's real pixel density (so it's crisp on big / high-DPI
   // screens), but cap the total pixel count so weak GPUs stay smooth.
@@ -250,20 +264,17 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
       my += (tmy - my) * 0.1;
       gl.uniform2f(uMouse, mx, my);
       gl.uniform1f(uTime, (ts - start) / 1000);
+      gl.uniform1f(uLight, document.documentElement.dataset.theme === 'light' ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
     raf = requestAnimationFrame(frame);
   }
   function startLoop() { if (running) return; running = true; raf = requestAnimationFrame(frame); }
   function stopLoop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
-  function syncRun() {
-    const light = document.documentElement.dataset.theme === 'light';
-    (!document.hidden && !light) ? startLoop() : stopLoop();
-  }
-  document.addEventListener('visibilitychange', syncRun);
-  // Re-check when the theme is toggled (silk only runs in dark mode).
-  new MutationObserver(syncRun).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  syncRun();
+  // Silk runs in both themes (the shader picks light/dark colours via u_light);
+  // pause only when the tab is hidden.
+  document.addEventListener('visibilitychange', () => { document.hidden ? stopLoop() : startLoop(); });
+  startLoop();
 })();
 
 /* ---------- 6) PORTFOLIO FILTER ----------------------------------------- */

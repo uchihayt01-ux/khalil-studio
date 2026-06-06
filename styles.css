@@ -664,8 +664,8 @@ html[lang="ar"] .hero__title { letter-spacing: 0; }
   --muted: #5d5676;
   --accent-2: #7c3aed;
 }
-/* Light mode: hide the dark silk; keep an animated light gradient + soft orbs. */
-[data-theme="light"] #bg-canvas { display: none !important; }
+/* Light mode: the silk shader switches to a pale palette (see u_light in JS).
+   The gradient + orbs below remain as the no-WebGL fallback. */
 [data-theme="light"] body {
   background: linear-gradient(125deg, #efe7ff 0%, #dcc9ff 22%, #f1eaff 45%, #cdb6ff 65%, #ece2ff 84%, #e3d6ff 100%);
   background-size: 320% 320%;
