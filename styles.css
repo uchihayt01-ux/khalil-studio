@@ -648,10 +648,11 @@ html[lang="ar"] .hero__title { letter-spacing: 0; }
 
 /* ---------- Theme toggle button (sun / moon) ---------- */
 .nav__theme svg { width: 18px; height: 18px; }
-.nav__theme .ico-sun { display: none; }
-.nav__theme .ico-moon { display: block; }
-[data-theme="light"] .nav__theme .ico-sun { display: block; }
-[data-theme="light"] .nav__theme .ico-moon { display: none; }
+/* Show the icon of the mode you'll switch TO: sun in dark, moon in light. */
+.nav__theme .ico-sun { display: block; }
+.nav__theme .ico-moon { display: none; }
+[data-theme="light"] .nav__theme .ico-sun { display: none; }
+[data-theme="light"] .nav__theme .ico-moon { display: block; }
 
 /* ---------- Light theme ---------- */
 [data-theme="light"] {
