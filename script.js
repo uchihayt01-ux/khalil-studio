@@ -142,11 +142,17 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' })
           || canvas.getContext('experimental-webgl');
   if (!gl) return; // keep the CSS gradient fallback
+  // If the GPU drops the context, reveal the CSS animated background instead of a blank canvas.
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); canvas.style.display = 'none'; }, false);
 
   const VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
   const FRAG = [
+    '#ifdef GL_FRAGMENT_PRECISION_HIGH',
     'precision highp float;',
-    'uniform vec2 u_res; uniform float u_time; uniform vec2 u_mouse; uniform float u_light;',
+    '#else',
+    'precision mediump float;',
+    '#endif',
+    'uniform vec2 u_res; uniform float u_time; uniform vec2 u_mouse; uniform float u_light; uniform float u_mobile;',
     'float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}',
     'float noise(vec2 p){vec2 i=floor(p),f=fract(p);float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.));vec2 u=f*f*(3.-2.*f);return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);}',
     'float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<3;i++){s+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s;}',
@@ -186,9 +192,9 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
     '    col+=sheen*vec3(0.55,0.62,1.0)*0.55;',
     '    col+=vec3(0.18,0.05,0.12)*pow(silk,3.0)*0.35;',
     '    col+=vec3(0.5,0.4,0.95)*smoothstep(0.5,0.0,md)*0.13;',
-    '    col*=mix(0.42,1.0,sideW);',
+    '    col*=mix(u_mobile>0.5?0.72:0.42,1.0,sideW);',   // lighter centre on phones so the silk shows
     '    float vig=smoothstep(1.35,0.35,length(uv-0.5));',
-    '    col*=mix(0.65,1.0,vig);',
+    '    col*=mix(u_mobile>0.5?0.85:0.65,1.0,vig);',
     '  }',
     '  col+=(fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)-0.5)/255.0;', // dither kills banding
     '  gl_FragColor=vec4(col,1.0);',
@@ -219,6 +225,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   const uTime = gl.getUniformLocation(prog, 'u_time');
   const uMouse = gl.getUniformLocation(prog, 'u_mouse');
   const uLight = gl.getUniformLocation(prog, 'u_light');
+  const uMobile = gl.getUniformLocation(prog, 'u_mobile');
 
   // Render at the device's real pixel density (so it's crisp on big / high-DPI
   // screens), but cap the total pixel count so weak GPUs stay smooth.
@@ -236,6 +243,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   }
   window.addEventListener('resize', resize);
   resize();
+  gl.uniform1f(uMobile, isMobile ? 1 : 0);
 
   // Cursor target (0..1, y up) with easing for a smooth, alive feel.
   let mx = 0.5, my = 0.55, tmx = 0.5, tmy = 0.55;
@@ -260,6 +268,8 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
     if (start === null) start = ts;
     if (ts - last >= FRAME) {
       last = ts;
+      // Self-heal if the canvas was sized before layout was ready (innerWidth 0).
+      if (canvas.width <= 1 && window.innerWidth > 1) resize();
       mx += (tmx - mx) * 0.1;
       my += (tmy - my) * 0.1;
       gl.uniform2f(uMouse, mx, my);
