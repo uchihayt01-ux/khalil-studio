@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=13" />
+  <link rel="stylesheet" href="styles.css?v=14" />
   <!-- EmailJS SDK (optional — see CONFIG in script.js). Falls back to mailto if not configured. -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -129,13 +129,21 @@
         <h2 class="section__title" data-i18n="work.head">Selected work</h2>
       </div>
 
-      <div class="filters reveal" id="filters">
+      <p class="gallery__sub reveal" data-i18n="work.sub">A journey through my work — drag a photo or hover to explore</p>
+      <div class="gallery reveal">
+        <div class="gallery__deck" id="gallery-deck"></div>
+      </div>
+      <div class="gallery__cta reveal">
+        <button class="btn btn--primary" id="view-all" data-i18n="work.viewall">View all projects</button>
+      </div>
+
+      <div class="filters reveal" id="filters" hidden>
         <button class="filter is-active" data-filter="all" data-i18n="work.all">All</button>
         <button class="filter" data-filter="dev" data-i18n="work.dev">Web Dev</button>
         <button class="filter" data-filter="design" data-i18n="work.design">UI/UX Design</button>
       </div>
 
-      <div class="projects" id="projects">
+      <div class="projects" id="projects" hidden>
         <article class="card reveal" data-cat="design">
           <div class="card__art">
             <img src="assets/img/portfolio-01.jpg" alt="Carigo car-rental app UI" loading="lazy" />
@@ -616,7 +624,7 @@
   <div class="toast" id="toast" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="i18n.js?v=13"></script>
-  <script src="script.js?v=13"></script>
+  <script src="i18n.js?v=14"></script>
+  <script src="script.js?v=14"></script>
 </body>
 </html>

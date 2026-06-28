@@ -23,6 +23,7 @@
       'svc.full.t': 'Full Package', 'svc.full.d': 'End-to-end: strategy, design and development — one team, one timeline, one polished result.', 'svc.full.cta': 'Order package →',
       /* portfolio */
       'work.head': 'Selected work', 'work.all': 'All', 'work.dev': 'Web Dev', 'work.design': 'UI/UX Design',
+      'work.sub': 'A journey through my work — drag a photo or hover to explore', 'work.viewall': 'View all projects',
       'work.carigo': 'Mobile UI/UX for a premium car-rental service — flows, components and a polished visual system.',
       'work.movis': 'Movie streaming experience with rich browsing, watchlists and a cinematic dark interface.',
       'work.smartscan': 'Web portal design and front-end build for a medical document scanning product.',
@@ -100,6 +101,7 @@
       'svc.dev.t': 'تطوير الويب', 'svc.dev.d': 'واجهات أمامية سريعة ومتجاوبة من الصفر بأحدث تقنيات JavaScript والأطر.', 'svc.dev.cta': 'اطلب تطويرًا →',
       'svc.full.t': 'الباقة الكاملة', 'svc.full.d': 'من الفكرة إلى الإطلاق: استراتيجية وتصميم وتطوير — فريق واحد ونتيجة متكاملة.', 'svc.full.cta': 'اطلب الباقة →',
       'work.head': 'أعمال مختارة', 'work.all': 'الكل', 'work.dev': 'تطوير ويب', 'work.design': 'تصميم UI/UX',
+      'work.sub': 'رحلة عبر أعمالي — اسحب صورة أو مرّر للاستكشاف', 'work.viewall': 'عرض كل المشاريع',
       'work.carigo': 'تصميم واجهة وتجربة لتطبيق تأجير سيارات فاخر — مسارات ومكوّنات ونظام بصري متقن.',
       'work.movis': 'تجربة بث أفلام بتصفّح غني وقوائم مشاهدة وواجهة داكنة سينمائية.',
       'work.smartscan': 'تصميم بوابة ويب وتطوير الواجهة الأمامية لمنتج مسح المستندات الطبية.',

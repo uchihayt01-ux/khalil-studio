@@ -287,19 +287,109 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   startLoop();
 })();
 
-/* ---------- 6) PORTFOLIO FILTER ----------------------------------------- */
+/* ---------- 6a) FANNED PHOTO GALLERY (draggable showcase) --------------- */
+(function gallery() {
+  const deck = $('#gallery-deck');
+  if (!deck) return;
+  const items = [
+    { src: 'assets/img/portfolio-01.jpg', name: 'Carigo App' },
+    { src: 'assets/img/portfolio-03.jpg', name: 'Movis — Streaming' },
+    { src: 'assets/img/portfolio-04.png', name: 'SmartScan Portal' },
+    { src: 'assets/img/project-2.jpg', name: 'Nutrion Art' },
+    { src: 'assets/img/portfolio-05.jpg', name: 'DSG — Brand Identity' },
+    { src: 'assets/img/portfolio-02.png', name: 'Portfolio Website' },
+    { src: 'assets/img/portfolio-06.jpg', name: 'Logo Collection' },
+  ];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const N = items.length;
+
+  const photos = items.map((it) => {
+    const fig = document.createElement('figure');
+    fig.className = 'gphoto';
+    fig.innerHTML = `<img src="${it.src}" alt="${it.name}" draggable="false" loading="lazy" />
+                     <figcaption>${it.name}</figcaption>`;
+    deck.appendChild(fig);
+    return fig;
+  });
+
+  let pos = []; // {x,y,r} fan target per photo
+  function layout() {
+    const w = window.innerWidth;
+    const step = w < 700 ? 40 : w < 1000 ? 92 : 150;
+    const size = w < 700 ? 140 : 200;
+    deck.style.height = (size + 90) + 'px';
+    pos = photos.map((p, i) => {
+      const off = i - (N - 1) / 2;          // centred index
+      const x = off * step;
+      const y = (i % 2 ? 1 : -1) * (8 + (i * 9) % 22);
+      const r = off * 2.2;                  // fan rotation
+      p.style.width = p.style.height = size + 'px';
+      p.style.zIndex = String(100 - Math.round(Math.abs(off) * 6)); // centre on top
+      return { x, y, r };
+    });
+  }
+  function place(p, i) {
+    p.style.setProperty('--x', pos[i].x + 'px');
+    p.style.setProperty('--y', pos[i].y + 'px');
+    p.style.setProperty('--r', pos[i].r + 'deg');
+  }
+
+  layout();
+  if (reduce) {
+    photos.forEach(place);
+  } else {
+    // Start stacked at centre, then spring out with a stagger.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      photos.forEach((p, i) => {
+        p.style.transitionDelay = (i * 0.08) + 's';
+        place(p, i);
+        setTimeout(() => { p.style.transitionDelay = ''; }, i * 80 + 800);
+      });
+    }));
+  }
+  window.addEventListener('resize', () => { layout(); photos.forEach(place); });
+
+  // Drag (with snap-back to the fan position).
+  photos.forEach((p, i) => {
+    let dragging = false, sx = 0, sy = 0;
+    p.addEventListener('pointerdown', (e) => {
+      dragging = true; sx = e.clientX; sy = e.clientY;
+      p.classList.add('dragging');
+      try { p.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    p.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      p.style.setProperty('--x', (pos[i].x + e.clientX - sx) + 'px');
+      p.style.setProperty('--y', (pos[i].y + e.clientY - sy) + 'px');
+    });
+    const end = () => { if (!dragging) return; dragging = false; p.classList.remove('dragging'); place(p, i); };
+    p.addEventListener('pointerup', end);
+    p.addEventListener('pointercancel', end);
+  });
+
+  // "View all projects" reveals the detailed filterable grid.
+  const viewAll = $('#view-all');
+  if (viewAll) viewAll.addEventListener('click', () => {
+    const filters = $('#filters'), projects = $('#projects');
+    if (filters) filters.hidden = false;
+    if (projects) projects.hidden = false;
+    viewAll.hidden = true;
+    $$('.reveal', $('#portfolio')).forEach((el) => el.classList.add('in'));
+    if (projects) projects.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+})();
+
+/* ---------- 6b) PORTFOLIO FILTER (in the revealed grid) ----------------- */
 (function filters() {
   const filterBar = $('#filters');
   if (!filterBar) return;
   const cards = $$('#projects .card');
-
   filterBar.addEventListener('click', (e) => {
     const btn = e.target.closest('.filter');
     if (!btn) return;
     $$('.filter', filterBar).forEach((f) => f.classList.remove('is-active'));
     btn.classList.add('is-active');
     const cat = btn.dataset.filter;
-
     cards.forEach((card) => {
       const show = cat === 'all' || card.dataset.cat === cat;
       card.classList.add('is-filtering');

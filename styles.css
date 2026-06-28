@@ -268,6 +268,35 @@ body.ready .hero__inner > .hero__anim:nth-child(5) { animation-delay: .75s; }
 .filter:hover { color: var(--text); border-color: var(--accent-2); }
 .filter.is-active { background: var(--accent-grad); color: #fff; border-color: transparent; }
 
+/* ---------- Fanned photo gallery (draggable showcase) ---------- */
+.gallery__sub { text-align: center; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-size: .78rem; margin: -28px 0 8px; }
+.gallery { position: relative; }
+.gallery__deck { position: relative; max-width: var(--maxw); height: 320px; margin: 10px auto 0; }
+.gphoto {
+  position: absolute; left: 50%; top: 50%; margin: 0; width: 200px; height: 200px;
+  border-radius: 22px; overflow: hidden; cursor: grab; touch-action: none; user-select: none;
+  border: 3px solid rgba(255, 255, 255, .08);
+  box-shadow: 0 24px 50px -18px rgba(0, 0, 0, .6);
+  transform: translate(-50%, -50%) translate(var(--x, 0px), var(--y, 0px)) rotate(var(--r, 0deg));
+  transition: transform .75s var(--ease), box-shadow .3s;
+}
+.gphoto img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.gphoto figcaption {
+  position: absolute; inset: auto 0 0 0; padding: 26px 14px 12px; font-size: .85rem; font-weight: 600;
+  color: #fff; background: linear-gradient(transparent, rgba(7, 4, 15, .8)); opacity: 0; transition: opacity .3s;
+}
+.gphoto:hover { z-index: 999 !important; box-shadow: 0 32px 70px -16px rgba(124, 58, 237, .6);
+  transform: translate(-50%, -50%) translate(var(--x, 0px), var(--y, 0px)) rotate(calc(var(--r, 0deg) + 2deg)) scale(1.08); }
+.gphoto:hover figcaption { opacity: 1; }
+.gphoto.dragging { transition: box-shadow .2s; cursor: grabbing; z-index: 9999 !important;
+  box-shadow: 0 40px 80px -16px rgba(0, 0, 0, .75);
+  transform: translate(-50%, -50%) translate(var(--x, 0px), var(--y, 0px)) rotate(var(--r, 0deg)) scale(1.06); }
+.gallery__cta { display: flex; justify-content: center; margin-top: 18px; }
+@media (max-width: 700px) {
+  .gallery__deck { height: 240px; }
+  .gphoto { width: 140px; height: 140px; border-radius: 16px; }
+}
+
 /* ---------- Project cards (Pinterest-style masonry) ---------- */
 .projects { columns: 3 300px; column-gap: 24px; }
 .card {
