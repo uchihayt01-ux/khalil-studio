@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=14" />
+  <link rel="stylesheet" href="styles.css?v=15" />
   <!-- EmailJS SDK (optional — see CONFIG in script.js). Falls back to mailto if not configured. -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -188,17 +188,17 @@
             <div class="card__tags"><span>Figma</span><span>Mobile</span><span>Design</span></div>
           </div>
         </article>
-        <article class="card reveal" data-cat="dev">
+        <a class="card reveal card--link" data-cat="dev" href="https://rinova-landing.vercel.app/" target="_blank" rel="noopener">
           <div class="card__art">
-            <img src="assets/img/portfolio-02.png" alt="Personal portfolio dashboard UI" loading="lazy" />
+            <img src="assets/img/rinova.jpg" alt="Rinova product landing page" loading="lazy" />
             <span class="card__cat">Web Dev</span>
           </div>
           <div class="card__body">
-            <h3 data-i18n="work.portfolio.t">Portfolio Website</h3>
-            <p data-i18n="work.portfolio.d">Animated, responsive personal portfolio built from scratch to showcase creative work.</p>
-            <div class="card__tags"><span>HTML</span><span>CSS</span><span>JS</span></div>
+            <h3 data-i18n="work.portfolio.t">Rinova — Landing Page</h3>
+            <p data-i18n="work.portfolio.d">Animated product landing page for Rinova — multilingual, light/dark, built &amp; deployed on Vercel. <span class="card__live">Visit live ↗</span></p>
+            <div class="card__tags"><span>Landing</span><span>Animation</span><span>Vercel</span></div>
           </div>
-        </article>
+        </a>
         <article class="card reveal" data-cat="design">
           <div class="card__art">
             <img src="assets/img/portfolio-05.jpg" alt="DSG brand identity and business cards" loading="lazy" />
@@ -624,7 +624,7 @@
   <div class="toast" id="toast" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="i18n.js?v=14"></script>
-  <script src="script.js?v=14"></script>
+  <script src="i18n.js?v=15"></script>
+  <script src="script.js?v=15"></script>
 </body>
 </html>

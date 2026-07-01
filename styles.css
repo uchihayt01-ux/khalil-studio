@@ -292,6 +292,13 @@ body.ready .hero__inner > .hero__anim:nth-child(5) { animation-delay: .75s; }
   box-shadow: 0 40px 80px -16px rgba(0, 0, 0, .75);
   transform: translate(-50%, -50%) translate(var(--x, 0px), var(--y, 0px)) rotate(var(--r, 0deg)) scale(1.06); }
 .gallery__cta { display: flex; justify-content: center; margin-top: 18px; }
+/* Little ↗ badge on gallery photos that link out */
+.gphoto--link::after { content: "↗"; position: absolute; top: 10px; right: 10px; z-index: 3; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: rgba(124, 58, 237, .92); color: #fff; font-size: .8rem; font-weight: 700; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.gphoto--link:hover::after { opacity: 1; }
+/* Live-site link inside a project card */
+.card--link { cursor: pointer; }
+.card__live { display: inline-block; margin-top: 8px; color: var(--accent-2); font-weight: 600; font-size: .82rem; }
+.card--link:hover .card__live { color: var(--text); }
 @media (max-width: 700px) {
   .gallery__deck { height: 240px; }
   .gphoto { width: 140px; height: 140px; border-radius: 16px; }

@@ -297,7 +297,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
     { src: 'assets/img/portfolio-04.png', name: 'SmartScan Portal' },
     { src: 'assets/img/project-2.jpg', name: 'Nutrion Art' },
     { src: 'assets/img/portfolio-05.jpg', name: 'DSG — Brand Identity' },
-    { src: 'assets/img/portfolio-02.png', name: 'Portfolio Website' },
+    { src: 'assets/img/rinova.jpg', name: 'Rinova — Landing', href: 'https://rinova-landing.vercel.app/' },
     { src: 'assets/img/portfolio-06.jpg', name: 'Logo Collection' },
   ];
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -349,20 +349,27 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
   }
   window.addEventListener('resize', () => { layout(); photos.forEach(place); });
 
-  // Drag (with snap-back to the fan position).
+  // Drag (with snap-back), and open the live link on a click (not a drag).
   photos.forEach((p, i) => {
-    let dragging = false, sx = 0, sy = 0;
+    let dragging = false, moved = false, sx = 0, sy = 0;
+    const href = items[i].href;
+    if (href) { p.style.cursor = 'pointer'; p.classList.add('gphoto--link'); }
     p.addEventListener('pointerdown', (e) => {
-      dragging = true; sx = e.clientX; sy = e.clientY;
+      dragging = true; moved = false; sx = e.clientX; sy = e.clientY;
       p.classList.add('dragging');
       try { p.setPointerCapture(e.pointerId); } catch (_) {}
     });
     p.addEventListener('pointermove', (e) => {
       if (!dragging) return;
+      if (Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 6) moved = true;
       p.style.setProperty('--x', (pos[i].x + e.clientX - sx) + 'px');
       p.style.setProperty('--y', (pos[i].y + e.clientY - sy) + 'px');
     });
-    const end = () => { if (!dragging) return; dragging = false; p.classList.remove('dragging'); place(p, i); };
+    const end = () => {
+      if (!dragging) return;
+      dragging = false; p.classList.remove('dragging'); place(p, i);
+      if (!moved && href) window.open(href, '_blank', 'noopener');
+    };
     p.addEventListener('pointerup', end);
     p.addEventListener('pointercancel', end);
   });

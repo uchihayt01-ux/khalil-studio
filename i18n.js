@@ -28,7 +28,7 @@
       'work.movis': 'Movie streaming experience with rich browsing, watchlists and a cinematic dark interface.',
       'work.smartscan': 'Web portal design and front-end build for a medical document scanning product.',
       'work.nutrion': 'Clean, friendly mobile app design for meal tracking and personalized nutrition plans.',
-      'work.portfolio.t': 'Portfolio Website', 'work.portfolio.d': 'Animated, responsive personal portfolio built from scratch to showcase creative work.',
+      'work.portfolio.t': 'Rinova — Landing Page', 'work.portfolio.d': 'Animated product landing page for Rinova — multilingual, light/dark, built &amp; deployed on Vercel. <span class="card__live">Visit live ↗</span>',
       'work.dsg': 'Logo and brand-identity system for Deaf Smart Glasses — cards, marks and guidelines.',
       'work.logos.t': 'Logo Collection', 'work.logos.d': 'A collection of logo and brand-mark work across illustration and visual design.',
       /* about */
@@ -106,7 +106,7 @@
       'work.movis': 'تجربة بث أفلام بتصفّح غني وقوائم مشاهدة وواجهة داكنة سينمائية.',
       'work.smartscan': 'تصميم بوابة ويب وتطوير الواجهة الأمامية لمنتج مسح المستندات الطبية.',
       'work.nutrion': 'تصميم تطبيق جوال نظيف وسهل لتتبّع الوجبات وخطط التغذية الشخصية.',
-      'work.portfolio.t': 'موقع بورتفوليو', 'work.portfolio.d': 'بورتفوليو شخصي متحرك ومتجاوب مبني من الصفر لعرض الأعمال الإبداعية.',
+      'work.portfolio.t': 'Rinova — صفحة هبوط', 'work.portfolio.d': 'صفحة هبوط متحركة لمنتج Rinova — متعددة اللغات، فاتح/داكن، مبنية ومنشورة على Vercel. <span class="card__live">زيارة الموقع ↗</span>',
       'work.dsg': 'شعار ونظام هوية بصرية لمشروع Deaf Smart Glasses — بطاقات وعلامات وإرشادات.',
       'work.logos.t': 'مجموعة شعارات', 'work.logos.d': 'مجموعة من أعمال الشعارات والعلامات التجارية في الرسم والتصميم البصري.',
       'about.head': 'عن الاستوديو',
