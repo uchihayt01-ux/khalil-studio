@@ -297,7 +297,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.
     { src: 'assets/img/portfolio-04.png', name: 'SmartScan Portal' },
     { src: 'assets/img/project-2.jpg', name: 'Nutrion Art' },
     { src: 'assets/img/portfolio-05.jpg', name: 'DSG — Brand Identity' },
-    { src: 'assets/img/rinova.jpg', name: 'Rinova — Landing', href: 'https://rinova-landing.vercel.app/' },
+    { src: 'assets/img/rinova.jpg?v=2', name: 'Rinova — Landing', href: 'https://rinova-landing.vercel.app/' },
     { src: 'assets/img/portfolio-06.jpg', name: 'Logo Collection' },
   ];
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
